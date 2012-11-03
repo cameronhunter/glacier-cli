@@ -14,6 +14,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.csanchez.aws.glacier.utils.Check;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.PropertiesCredentials;
@@ -39,13 +40,20 @@ public class Main {
 
         AWSCredentials credentials = new PropertiesCredentials( props );
 
+        if ( args.length < 2 ) {
+            printHelp( COMMON_OPTIONS );
+            return;
+        }
+        
         CommandLine cmd = new PosixParser().parse( COMMON_OPTIONS, args );
         List<String> arguments = Arrays.asList( cmd.getArgs() );
 
         String region = cmd.getOptionValue( "region", "us-east-1" );
-        Action action = Action.fromName( arguments.get( 0 ) );
-        String vault = arguments.get( 1 );
+        Action action = Check.notNull( Action.fromName( arguments.get( 0 ) ), "No action provided" );
+        String vault = Check.notBlank( arguments.get( 1 ), "No vault provided" );
 
+        LOG.info( "Using vault \"" + vault + "\" in \"" + region + "\" region" );
+        
         Glacier glacier = new Glacier( credentials, region );
 
         try {
@@ -60,7 +68,11 @@ public class Main {
                 case UPLOAD:
                     Validate.isTrue( arguments.size() >= 3 );
 
-                    for ( String archive : arguments.subList( 2, arguments.size() ) ) {
+                    List<String> uploads = arguments.subList( 2, arguments.size() );
+                    
+                    LOG.info( uploads.size() + " archive(s) requested for upload." );
+                    
+                    for ( String archive : uploads ) {
                         glacier.upload( vault, archive );
                     }
                     return;
@@ -68,7 +80,11 @@ public class Main {
                 case DELETE:
                     Validate.isTrue( arguments.size() >= 3 );
 
-                    for ( String archive : arguments.subList( 2, arguments.size() ) ) {
+                    List<String> deletes = arguments.subList( 2, arguments.size() );
+                    
+                    LOG.info( deletes.size() + " archive(s) requested for deletion." );
+                    
+                    for ( String archive : deletes ) {
                         glacier.delete( vault, archive );
                     }
                     return;
