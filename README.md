@@ -22,10 +22,8 @@ accessKey=…
 ## Command line options
 
 ```
- -output <file_name>   File to save the inventory to. Defaults to 'glacier.json'
- -queue <queue_name>   SQS queue to use for inventory retrieval. Defaults to 'glacier'
+ -file   <file_name>   File to save the inventory to. Defaults to 'glacier-<vault-name>-inventory.json'
  -region <region>      Specify URL as the web service URL to use. Defaults to 'us-east-1'
- -topic <topic_name>   SNS topic to use for inventory retrieval. Defaults to 'glacier'
 ```
 
 ## Examples
