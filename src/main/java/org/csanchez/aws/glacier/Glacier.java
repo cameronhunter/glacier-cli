@@ -6,6 +6,7 @@ import static org.csanchez.aws.glacier.utils.Check.notNull;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -14,6 +15,8 @@ import org.csanchez.aws.glacier.actions.Delete;
 import org.csanchez.aws.glacier.actions.Download;
 import org.csanchez.aws.glacier.actions.Inventory;
 import org.csanchez.aws.glacier.actions.Upload;
+import org.csanchez.aws.glacier.actions.Vaults;
+import org.csanchez.aws.glacier.domain.Vault;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.glacier.AmazonGlacierClient;
@@ -39,6 +42,10 @@ public class Glacier implements Closeable {
         this.credentials = notNull( credentials );
         this.client = new AmazonGlacierClient( credentials );
         this.client.setEndpoint( "https://glacier." + notBlank( region ) + ".amazonaws.com/" );
+    }
+
+    public Future<Set<Vault>> vaults() {
+        return workers.submit( new Vaults( client ) );
     }
 
     public Future<File> inventory( String vault ) {
