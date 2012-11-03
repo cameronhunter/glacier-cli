@@ -1,5 +1,6 @@
 package org.csanchez.aws.glacier.actions;
 
+import static org.apache.commons.io.FileUtils.byteCountToDisplaySize;
 import static org.csanchez.aws.glacier.utils.Check.notBlank;
 import static org.csanchez.aws.glacier.utils.Check.notNull;
 
@@ -32,9 +33,12 @@ public class Upload implements Callable<String> {
 
     public String call() throws Exception {
         try {
-            LOG.info( "Starting upload of archive \"" + archive + "\" to vault \"" + vault + "\"" );
+            File upload = new File( archive );
+            
+            LOG.info( "Starting upload of archive \"" + archive + "\" (" + byteCountToDisplaySize( upload.length() ) + ") to vault \"" + vault + "\"" );
+
             ArchiveTransferManager atm = new ArchiveTransferManager( client, credentials );
-            UploadResult result = atm.upload( vault, archive, new File( archive ) );
+            UploadResult result = atm.upload( vault, archive, upload );
             String archiveId = result.getArchiveId();
 
             LOG.info( "Archive \"" + archive + "\" (" + archiveId + ") successfully uploaded to vault \"" + vault + "\"" );
