@@ -35,7 +35,7 @@ public class Upload implements Callable<String> {
         try {
             File upload = new File( archive );
             
-            LOG.info( "Starting upload of archive \"" + archive + "\" (" + byteCountToDisplaySize( upload.length() ) + ") to vault \"" + vault + "\"" );
+            LOG.info( "Uploading \"" + archive + "\" (" + byteCountToDisplaySize( upload.length() ) + ") to vault \"" + vault + "\"" );
 
             ArchiveTransferManager atm = new ArchiveTransferManager( client, credentials );
             UploadResult result = atm.upload( vault, archive, upload );
