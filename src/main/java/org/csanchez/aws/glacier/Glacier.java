@@ -18,6 +18,12 @@ import org.csanchez.aws.glacier.actions.Upload;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.glacier.AmazonGlacierClient;
 
+/**
+ * Uses Glacier high level API for uploading, downloading, deleting files, and
+ * the low-level one for retrieving vault inventory.
+ * 
+ * @see http://docs.amazonwebservices.com/amazonglacier/latest/dev/
+ */
 public class Glacier implements Closeable {
 
     private final ExecutorService workers;
@@ -53,6 +59,7 @@ public class Glacier implements Closeable {
 
     public void close() throws IOException {
         workers.shutdown();
+        client.shutdown();
     }
 
 }

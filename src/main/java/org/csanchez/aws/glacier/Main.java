@@ -19,12 +19,6 @@ import org.csanchez.aws.glacier.utils.Check;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.PropertiesCredentials;
 
-/**
- * Uses Glacier high level API for uploading, downloading, deleting files, and
- * the low-level one for retrieving vault inventory.
- * 
- * More info at http://docs.amazonwebservices.com/amazonglacier/latest/dev/
- */
 public class Main {
 
     private static final Log LOG = LogFactory.getLog( Main.class );
