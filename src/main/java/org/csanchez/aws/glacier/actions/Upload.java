@@ -37,6 +37,7 @@ public class Upload implements Callable<String> {
             File upload = new File( archive );
             
             Validate.isTrue( upload.exists(), "File \"" + archive + "\" doesn't exist" );
+            Validate.isTrue( upload.isFile(), "Cannot directly upload a directory to Glacier. Create an archive from it first." );
             
             LOG.info( "Uploading \"" + archive + "\" (" + byteCountToDisplaySize( upload.length() ) + ") to vault \"" + vault + "\"" );
 
