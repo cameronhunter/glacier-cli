@@ -2,7 +2,10 @@ package org.csanchez.aws.glacier;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -28,7 +31,7 @@ import com.amazonaws.auth.PropertiesCredentials;
 public class Main {
 
     private static final Log LOG = LogFactory.getLog( Main.class );
-    
+
     private static Options COMMON_OPTIONS = commonOptions();
     private static ExecutorService WORKERS = Executors.newSingleThreadExecutor();
 
@@ -50,42 +53,49 @@ public class Main {
         String vault = arguments.get( 1 );
 
         try {
-            Glacier glacier = new Glacier( WORKERS, credentials, region );
+            Glacier glacier = new Glacier( credentials, region );
 
             switch ( action ) {
                 case INVENTORY:
                     Validate.isTrue( arguments.size() == 2 );
 
-                    File inventory = glacier.inventory( vault ).get();
+                    File inventory = WORKERS.submit( glacier.inventory( vault ) ).get();
                     inventory.renameTo( new File( cmd.getOptionValue( "file", "glacier-" + vault + "-inventory.json" ) ) );
                     return;
 
                 case UPLOAD:
                     Validate.isTrue( arguments.size() >= 3 );
 
+                    Set<Callable<String>> uploads = new HashSet<Callable<String>>();
                     for ( String archive : arguments.subList( 2, arguments.size() ) ) {
-                        glacier.upload( vault, archive );
+                        uploads.add( glacier.upload( vault, archive ) );
                     }
+
+                    WORKERS.invokeAll( uploads );
                     return;
 
                 case DELETE:
                     Validate.isTrue( arguments.size() >= 3 );
 
+                    Set<Callable<Boolean>> deletes = new HashSet<Callable<Boolean>>();
                     for ( String archive : arguments.subList( 2, arguments.size() ) ) {
-                        glacier.delete( vault, archive );
+                        deletes.add( glacier.delete( vault, archive ) );
                     }
+
+                    WORKERS.invokeAll( deletes );
                     return;
 
                 case DOWNLOAD:
                     Validate.isTrue( arguments.size() == 4 );
 
-                    File archive = glacier.download( vault, arguments.get( 2 ) ).get();
+                    File archive = WORKERS.submit( glacier.download( vault, arguments.get( 2 ) ) ).get();
                     archive.renameTo( new File( arguments.get( 3 ) ) );
                     return;
             }
         } catch ( IllegalArgumentException ignore ) {
             // Fall-through for validation
         } finally {
+            LOG.info( "All tasks completed." );
             WORKERS.shutdown();
         }
 
