@@ -85,6 +85,8 @@ public class Main {
             }
         } catch ( IllegalArgumentException ignore ) {
             // Fall-through for validation
+        } finally {
+            WORKERS.shutdown();
         }
 
         printHelp( COMMON_OPTIONS );
