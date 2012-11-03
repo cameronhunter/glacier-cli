@@ -3,8 +3,6 @@ package org.csanchez.aws.glacier;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
@@ -29,9 +27,7 @@ import com.amazonaws.auth.PropertiesCredentials;
 public class Main {
 
     private static final Log LOG = LogFactory.getLog( Main.class );
-    
-    private static Options COMMON_OPTIONS = commonOptions();
-    private static ExecutorService WORKERS = Executors.newSingleThreadExecutor();
+    private static final Options COMMON_OPTIONS = commonOptions();
 
     public static void main( String[] args ) throws Exception {
 
@@ -50,7 +46,7 @@ public class Main {
         Action action = Action.fromName( arguments.get( 0 ) );
         String vault = arguments.get( 1 );
 
-        Glacier glacier = new Glacier( WORKERS, credentials, region );
+        Glacier glacier = new Glacier( credentials, region );
 
         try {
             switch ( action ) {
