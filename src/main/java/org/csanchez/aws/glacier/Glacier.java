@@ -29,7 +29,7 @@ public class Glacier implements Closeable {
     }
 
     public Glacier( ExecutorService workers, AWSCredentials credentials, String region ) {
-        this.workers = workers;
+        this.workers = notNull( workers );
         this.credentials = notNull( credentials );
         this.client = new AmazonGlacierClient( credentials );
         this.client.setEndpoint( "https://glacier." + notBlank( region ) + ".amazonaws.com/" );
