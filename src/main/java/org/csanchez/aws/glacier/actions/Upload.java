@@ -7,6 +7,7 @@ import static org.csanchez.aws.glacier.utils.Check.notNull;
 import java.io.File;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -34,6 +35,8 @@ public class Upload implements Callable<String> {
     public String call() throws Exception {
         try {
             File upload = new File( archive );
+            
+            Validate.isTrue( upload.exists(), "File \"" + archive + "\" doesn't exist" );
             
             LOG.info( "Uploading \"" + archive + "\" (" + byteCountToDisplaySize( upload.length() ) + ") to vault \"" + vault + "\"" );
 
