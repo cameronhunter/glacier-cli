@@ -1,5 +1,8 @@
 package org.csanchez.aws.glacier.actions;
 
+import static org.csanchez.aws.glacier.utils.Check.notBlank;
+import static org.csanchez.aws.glacier.utils.Check.notNull;
+
 import java.io.File;
 import java.util.concurrent.Callable;
 
@@ -21,10 +24,10 @@ public class Upload implements Callable<String> {
     private final String archive;
 
     public Upload( AmazonGlacierClient client, AWSCredentials credentials, String vault, String archive ) {
-        this.client = client;
-        this.credentials = credentials;
-        this.vault = vault;
-        this.archive = archive;
+        this.client = notNull( client );
+        this.credentials = notNull( credentials );
+        this.vault = notBlank( vault );
+        this.archive = notBlank( archive );
     }
 
     public String call() throws Exception {

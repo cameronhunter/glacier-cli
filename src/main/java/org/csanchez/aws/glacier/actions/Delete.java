@@ -1,5 +1,8 @@
 package org.csanchez.aws.glacier.actions;
 
+import static org.csanchez.aws.glacier.utils.Check.notBlank;
+import static org.csanchez.aws.glacier.utils.Check.notNull;
+
 import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
@@ -17,9 +20,9 @@ public class Delete implements Callable<Boolean> {
     private final String archiveId;
 
     public Delete( AmazonGlacierClient client, String vault, String archiveId ) {
-        this.client = client;
-        this.vault = vault;
-        this.archiveId = archiveId;
+        this.client = notNull( client );
+        this.vault = notBlank( vault );
+        this.archiveId = notBlank( archiveId );
     }
 
     public Boolean call() {

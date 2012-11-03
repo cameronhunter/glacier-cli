@@ -1,5 +1,8 @@
 package org.csanchez.aws.glacier.actions;
 
+import static org.csanchez.aws.glacier.utils.Check.notBlank;
+import static org.csanchez.aws.glacier.utils.Check.notNull;
+
 import java.io.File;
 import java.util.concurrent.Callable;
 
@@ -20,10 +23,10 @@ public class Download implements Callable<File> {
     private final String archiveId;
 
     public Download( AmazonGlacierClient client, AWSCredentials credentials, String vault, String archiveId ) {
-        this.client = client;
-        this.credentials = credentials;
-        this.vault = vault;
-        this.archiveId = archiveId;
+        this.client = notNull( client );
+        this.credentials = notNull( credentials );
+        this.vault = notBlank( vault );
+        this.archiveId = notBlank( archiveId );
     }
 
     public File call() {

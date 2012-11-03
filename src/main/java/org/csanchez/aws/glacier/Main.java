@@ -45,7 +45,7 @@ public class Main {
         CommandLine cmd = new PosixParser().parse( COMMON_OPTIONS, args );
         List<String> arguments = Arrays.asList( cmd.getArgs() );
 
-        String region = cmd.getOptionValue( "region" );
+        String region = cmd.getOptionValue( "region", "us-east-1" );
         Action action = Action.fromName( arguments.get( 0 ) );
         String vault = arguments.get( 1 );
 

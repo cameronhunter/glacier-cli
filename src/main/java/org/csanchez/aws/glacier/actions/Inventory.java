@@ -1,5 +1,8 @@
 package org.csanchez.aws.glacier.actions;
 
+import static org.csanchez.aws.glacier.utils.Check.notBlank;
+import static org.csanchez.aws.glacier.utils.Check.notNull;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -25,8 +28,8 @@ public class Inventory implements Callable<File> {
     private final String vault;
 
     public Inventory( AmazonGlacierClient client, String vault ) {
-        this.client = client;
-        this.vault = vault;
+        this.client = notNull( client );
+        this.vault = notBlank( vault );
     }
     
     public File call() {

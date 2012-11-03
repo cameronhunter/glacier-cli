@@ -1,5 +1,8 @@
 package org.csanchez.aws.glacier;
 
+import static org.csanchez.aws.glacier.utils.Check.notBlank;
+import static org.csanchez.aws.glacier.utils.Check.notNull;
+
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,9 +28,9 @@ public class Glacier {
     
     public Glacier( ExecutorService workers, AWSCredentials credentials, String region ) {
         this.workers = workers;
-        this.credentials = credentials;
+        this.credentials = notNull( credentials );
         this.client = new AmazonGlacierClient( credentials );
-        this.client.setEndpoint( "https://glacier." + region + ".amazonaws.com/" );
+        this.client.setEndpoint( "https://glacier." + notBlank( region ) + ".amazonaws.com/" );
     }
 
     public Future<File> inventory( String vault ) {
