@@ -59,6 +59,11 @@ public class Main {
                     for ( Vault vault : vaults ) {
                         LOG.info( vault );
                     }
+                    
+                    if ( vaults.isEmpty() ) {
+                        LOG.info( "There are no vaults in \"" + region + "\" region" );
+                    }
+                    
                     return;
 
                 case INVENTORY:
