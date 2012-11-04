@@ -72,7 +72,6 @@ public class Glacier implements Closeable {
 
     public void close() throws IOException {
         workers.shutdown();
-        client.shutdown();
     }
 
 }
