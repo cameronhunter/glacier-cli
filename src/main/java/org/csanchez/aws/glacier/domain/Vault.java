@@ -4,7 +4,7 @@ import static org.apache.commons.io.FileUtils.byteCountToDisplaySize;
 
 import org.csanchez.aws.glacier.utils.Check;
 
-public final class Vault {
+public final class Vault extends TabSeparatedToString {
 
     public final String arn;
     public final String name;
@@ -21,8 +21,8 @@ public final class Vault {
     }
 
     @Override
-    public String toString() {
-        return "Vault[name=" + name + ", numberOfArchives=" + numberOfArchives + ", size=" + byteCountToDisplaySize( sizeInBytes ) + "]";
+    Object[] getStringFields() {
+        return new Object[] { arn, name, creationDate, numberOfArchives, sizeInBytes, byteCountToDisplaySize( sizeInBytes ) };
     }
 
     @Override
