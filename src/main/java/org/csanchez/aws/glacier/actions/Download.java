@@ -36,7 +36,7 @@ public class Download implements Callable<File> {
             ArchiveTransferManager atm = new ArchiveTransferManager( client, credentials );
             atm.download( vault, archiveId, temp );
             
-            LOG.info( "Sucessfully downloaded archiveId \"" + archiveId + "\" from vault \"" + vault + "\"" );
+            LOG.info( "Successfully downloaded archiveId \"" + archiveId + "\" from vault \"" + vault + "\"" );
             return temp;
         } catch ( Exception e ) {
             String errorMessage = "Failed to download archiveId \"" + archiveId + "\" from vault \"" + vault + "\"";
