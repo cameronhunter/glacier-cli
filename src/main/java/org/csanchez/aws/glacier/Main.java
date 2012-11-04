@@ -48,8 +48,6 @@ public class Main {
         String region = cmd.getOptionValue( "region", "us-east-1" );
         Action action = Check.notNull( Action.fromName( arguments.get( 0 ) ), "No action provided" );
         
-//        LOG.info( "Using vault \"" + arguments.get( 1 ) + "\" in \"" + region + "\" region" );
-        
         Glacier glacier = new Glacier( credentials, region );
 
         try {

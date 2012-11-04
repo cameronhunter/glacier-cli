@@ -11,6 +11,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.csanchez.aws.glacier.actions.Delete;
 import org.csanchez.aws.glacier.actions.Download;
 import org.csanchez.aws.glacier.actions.Inventory;
@@ -29,6 +31,8 @@ import com.amazonaws.services.glacier.AmazonGlacierClient;
  */
 public class Glacier implements Closeable {
 
+    private static final Log LOG = LogFactory.getLog( Glacier.class );
+    
     private final ExecutorService workers;
     private final AmazonGlacierClient client;
     private final AWSCredentials credentials;
@@ -42,6 +46,8 @@ public class Glacier implements Closeable {
         this.credentials = notNull( credentials );
         this.client = new AmazonGlacierClient( credentials );
         this.client.setEndpoint( "https://glacier." + notBlank( region ) + ".amazonaws.com/" );
+        
+        LOG.info( "Using \"" + region + "\" region" );
     }
 
     public Future<Set<Vault>> vaults() {
