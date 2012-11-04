@@ -1,6 +1,6 @@
 # Glacier CLI
 
-A command line client to [Amazon Glacier](http://aws.amazon.com/glacier) based on AWS examples.
+A command line client to [Amazon Glacier](http://aws.amazon.com/glacier).
 
 ## Configuration
 
