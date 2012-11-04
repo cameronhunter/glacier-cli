@@ -1,8 +1,9 @@
 package org.csanchez.aws.glacier.domain;
 
 import static org.apache.commons.io.FileUtils.byteCountToDisplaySize;
+import static org.csanchez.aws.glacier.utils.CharDelimitedString.tsv;
 
-public final class Archive extends TabSeparatedToString {
+public final class Archive {
 
     public final String archiveId;
     public final String description;
@@ -17,10 +18,10 @@ public final class Archive extends TabSeparatedToString {
     }
 
     @Override
-    Object[] getStringFields() {
-        return new Object[] { archiveId, description, creationDate, sizeInBytes, byteCountToDisplaySize( sizeInBytes ) };
+    public String toString() {
+        return tsv( archiveId, description, creationDate, sizeInBytes, byteCountToDisplaySize( sizeInBytes ) );
     }
-
+    
     @Override
     public int hashCode() {
         final int prime = 31;

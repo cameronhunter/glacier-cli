@@ -1,10 +1,11 @@
 package org.csanchez.aws.glacier.domain;
 
 import static org.apache.commons.io.FileUtils.byteCountToDisplaySize;
+import static org.csanchez.aws.glacier.utils.CharDelimitedString.tsv;
 
 import org.csanchez.aws.glacier.utils.Check;
 
-public final class Vault extends TabSeparatedToString {
+public final class Vault {
 
     public final String arn;
     public final String name;
@@ -19,10 +20,10 @@ public final class Vault extends TabSeparatedToString {
         this.sizeInBytes = sizeInBytes;
         this.creationDate = creationDate;
     }
-
+    
     @Override
-    Object[] getStringFields() {
-        return new Object[] { arn, name, creationDate, numberOfArchives, sizeInBytes, byteCountToDisplaySize( sizeInBytes ) };
+    public String toString() {
+        return tsv( arn, name, creationDate, numberOfArchives, sizeInBytes, byteCountToDisplaySize( sizeInBytes ) );
     }
 
     @Override
