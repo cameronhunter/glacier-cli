@@ -14,6 +14,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.csanchez.aws.glacier.domain.Action;
 import org.csanchez.aws.glacier.utils.Check;
 
 import com.amazonaws.auth.AWSCredentials;

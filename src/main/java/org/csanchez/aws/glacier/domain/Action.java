@@ -1,4 +1,4 @@
-package org.csanchez.aws.glacier;
+package org.csanchez.aws.glacier.domain;
 
 public enum Action {
 
