@@ -9,7 +9,6 @@ Create `$HOME/AwsCredentials.properties` with your AWS keys
 ```
 secretKey=…
 accessKey=…
-
 ```
 
 ## Commands
@@ -23,7 +22,6 @@ accessKey=…
 ## Command line options
 
 ```
- -file   <file_name>   File to save the inventory to. Defaults to 'glacier-<vault-name>-inventory.json'
  -region <region>      Specify URL as the web service URL to use. Defaults to 'us-east-1'
 ```
 
