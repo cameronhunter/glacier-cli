@@ -2,7 +2,7 @@ package org.csanchez.aws.glacier.domain;
 
 public enum Action {
 
-    UPLOAD, DOWNLOAD, DELETE, INVENTORY;
+    UPLOAD, DOWNLOAD, DELETE, INVENTORY, VAULTS;
 
     public static Action fromName( String name ) {
         for ( Action action : values() ) {

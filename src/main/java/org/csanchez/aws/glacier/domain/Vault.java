@@ -5,6 +5,7 @@ import static org.apache.commons.io.FileUtils.byteCountToDisplaySize;
 import org.csanchez.aws.glacier.utils.Check;
 
 import com.amazonaws.services.glacier.model.DescribeVaultOutput;
+import com.google.common.base.Function;
 
 public final class Vault {
 

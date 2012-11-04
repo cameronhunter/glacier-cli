@@ -3,6 +3,7 @@ package org.csanchez.aws.glacier;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
@@ -15,6 +16,7 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.csanchez.aws.glacier.domain.Action;
+import org.csanchez.aws.glacier.domain.Vault;
 import org.csanchez.aws.glacier.utils.Check;
 
 import com.amazonaws.auth.AWSCredentials;
@@ -35,7 +37,7 @@ public class Main {
 
         AWSCredentials credentials = new PropertiesCredentials( props );
 
-        if ( args.length < 2 ) {
+        if ( args.length < 1 ) {
             printHelp( COMMON_OPTIONS );
             return;
         }
@@ -45,19 +47,27 @@ public class Main {
 
         String region = cmd.getOptionValue( "region", "us-east-1" );
         Action action = Check.notNull( Action.fromName( arguments.get( 0 ) ), "No action provided" );
-        String vault = Check.notBlank( arguments.get( 1 ), "No vault provided" );
-
-        LOG.info( "Using vault \"" + vault + "\" in \"" + region + "\" region" );
+        
+//        LOG.info( "Using vault \"" + arguments.get( 1 ) + "\" in \"" + region + "\" region" );
         
         Glacier glacier = new Glacier( credentials, region );
 
         try {
             switch ( action ) {
+                case VAULTS:
+                    Validate.isTrue( arguments.size() == 1 );
+                    
+                    Set<Vault> vaults = glacier.vaults().get();
+                    for ( Vault vault : vaults ) {
+                        LOG.info( vault );
+                    }
+                    return;
+                    
                 case INVENTORY:
                     Validate.isTrue( arguments.size() == 2 );
 
-                    File inventory = glacier.inventory( vault ).get();
-                    inventory.renameTo( new File( cmd.getOptionValue( "file", "glacier-" + vault + "-inventory.json" ) ) );
+                    File inventory = glacier.inventory( arguments.get( 1 ) ).get();
+                    inventory.renameTo( new File( cmd.getOptionValue( "file", "glacier-" + arguments.get( 1 ) + "-inventory.json" ) ) );
                     return;
 
                 case UPLOAD:
@@ -68,7 +78,7 @@ public class Main {
                     LOG.info( uploads.size() + " archive(s) requested for upload." );
                     
                     for ( String archive : uploads ) {
-                        glacier.upload( vault, archive );
+                        glacier.upload( arguments.get( 1 ), archive );
                     }
                     return;
 
@@ -80,14 +90,14 @@ public class Main {
                     LOG.info( deletes.size() + " archive(s) requested for deletion." );
                     
                     for ( String archive : deletes ) {
-                        glacier.delete( vault, archive );
+                        glacier.delete( arguments.get( 1 ), archive );
                     }
                     return;
 
                 case DOWNLOAD:
                     Validate.isTrue( arguments.size() == 4 );
 
-                    File archive = glacier.download( vault, arguments.get( 2 ) ).get();
+                    File archive = glacier.download( arguments.get( 1 ), arguments.get( 2 ) ).get();
                     archive.renameTo( new File( arguments.get( 3 ) ) );
                     return;
             }
