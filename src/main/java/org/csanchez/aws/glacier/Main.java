@@ -41,26 +41,26 @@ public class Main {
             printHelp( COMMON_OPTIONS );
             return;
         }
-        
+
         CommandLine cmd = new PosixParser().parse( COMMON_OPTIONS, args );
         List<String> arguments = Arrays.asList( cmd.getArgs() );
 
         String region = cmd.getOptionValue( "region", "us-east-1" );
         Action action = Check.notNull( Action.fromName( arguments.get( 0 ) ), "No action provided" );
-        
+
         Glacier glacier = new Glacier( credentials, region );
 
         try {
             switch ( action ) {
                 case VAULTS:
                     Validate.isTrue( arguments.size() == 1 );
-                    
+
                     Set<Vault> vaults = glacier.vaults().get();
                     for ( Vault vault : vaults ) {
                         LOG.info( vault );
                     }
                     return;
-                    
+
                 case INVENTORY:
                     Validate.isTrue( arguments.size() == 2 );
 
@@ -72,9 +72,9 @@ public class Main {
                     Validate.isTrue( arguments.size() >= 3 );
 
                     List<String> uploads = arguments.subList( 2, arguments.size() );
-                    
+
                     LOG.info( uploads.size() + " archive(s) requested for upload." );
-                    
+
                     for ( String archive : uploads ) {
                         glacier.upload( arguments.get( 1 ), archive );
                     }
@@ -84,9 +84,9 @@ public class Main {
                     Validate.isTrue( arguments.size() >= 3 );
 
                     List<String> deletes = arguments.subList( 2, arguments.size() );
-                    
+
                     LOG.info( deletes.size() + " archive(s) requested for deletion." );
-                    
+
                     for ( String archive : deletes ) {
                         glacier.delete( arguments.get( 1 ), archive );
                     }
@@ -101,6 +101,8 @@ public class Main {
             }
         } catch ( IllegalArgumentException ignore ) {
             // Fall-through for validation
+        } catch ( Throwable e ) {
+            LOG.error( e.getMessage(), e );
         } finally {
             IOUtils.closeQuietly( glacier );
         }
