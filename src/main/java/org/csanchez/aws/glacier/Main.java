@@ -1,10 +1,8 @@
 package org.csanchez.aws.glacier;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static org.apache.commons.io.FileUtils.byteCountToDisplaySize;
-
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -19,12 +17,12 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.csanchez.aws.glacier.domain.Action;
+import org.csanchez.aws.glacier.domain.Archive;
 import org.csanchez.aws.glacier.domain.Vault;
 import org.csanchez.aws.glacier.utils.Check;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.PropertiesCredentials;
-import com.google.common.base.Joiner;
 
 public class Main {
 
@@ -61,8 +59,7 @@ public class Main {
 
                     Set<Vault> vaults = glacier.vaults().get();
                     for ( Vault vault : vaults ) {
-                        LOG.info( vault );
-                        System.out.println( Joiner.on( '\t' ).join( newArrayList( vault.arn, vault.name, vault.creationDate, String.valueOf( vault.numberOfArchives ), String.valueOf( vault.sizeInBytes ), byteCountToDisplaySize( vault.sizeInBytes ) ) ) );
+                        System.out.println( vault );
                     }
 
                     if ( vaults.isEmpty() ) {
@@ -74,13 +71,21 @@ public class Main {
                 case INVENTORY:
                     Validate.isTrue( arguments.size() == 2 );
 
-                    File inventory = glacier.inventory( arguments.get( 1 ) ).get();
-                    inventory.renameTo( new File( cmd.getOptionValue( "file", "glacier-" + arguments.get( 1 ) + "-inventory.json" ) ) );
+                    Collection<Archive> inventory = glacier.inventory( arguments.get( 1 ) ).get();
+                    for ( Archive archive : inventory ) {
+                        System.out.println( archive );
+                    }
+                    
+                    if ( inventory.isEmpty() ) {
+                        LOG.info( "There are no archives in vault \"" + arguments.get( 1 ) + "\"" );
+                    }
+                    
                     return;
 
                 case UPLOAD:
                     Validate.isTrue( arguments.size() >= 3 );
 
+                    // TODO: output filename and archiveId to sysout
                     List<String> uploads = arguments.subList( 2, arguments.size() );
 
                     LOG.info( uploads.size() + " archive(s) requested for upload." );
