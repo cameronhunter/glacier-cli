@@ -56,7 +56,7 @@ public class Vaults implements Callable<Set<Vault>> {
     private static final Function<DescribeVaultOutput, Vault> TO_VAULT = new Function<DescribeVaultOutput, Vault>() {
         public Vault apply( DescribeVaultOutput response ) {
             Check.notNull( response );
-            return new Vault( response.getVaultARN(), response.getVaultName(), response.getNumberOfArchives(), response.getSizeInBytes() );
+            return new Vault( response.getVaultARN(), response.getVaultName(), response.getNumberOfArchives(), response.getSizeInBytes(), response.getCreationDate() );
         }
     };
 

@@ -1,5 +1,8 @@
 package org.csanchez.aws.glacier;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static org.apache.commons.io.FileUtils.byteCountToDisplaySize;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +24,7 @@ import org.csanchez.aws.glacier.utils.Check;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.PropertiesCredentials;
+import com.google.common.base.Joiner;
 
 public class Main {
 
@@ -58,12 +62,13 @@ public class Main {
                     Set<Vault> vaults = glacier.vaults().get();
                     for ( Vault vault : vaults ) {
                         LOG.info( vault );
+                        System.out.println( Joiner.on( '\t' ).join( newArrayList( vault.arn, vault.name, vault.creationDate, String.valueOf( vault.numberOfArchives ), String.valueOf( vault.sizeInBytes ), byteCountToDisplaySize( vault.sizeInBytes ) ) ) );
                     }
-                    
+
                     if ( vaults.isEmpty() ) {
                         LOG.info( "There are no vaults in \"" + region + "\" region" );
                     }
-                    
+
                     return;
 
                 case INVENTORY:

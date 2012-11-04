@@ -6,17 +6,18 @@ import org.csanchez.aws.glacier.utils.Check;
 
 public final class Vault {
 
+    public final String arn;
     public final String name;
     public final Long numberOfArchives;
     public final Long sizeInBytes;
+    public final String creationDate;
 
-    private final String arn;
-
-    public Vault( String arn, String name, Long numberOfArchives, Long sizeInBytes ) {
+    public Vault( String arn, String name, Long numberOfArchives, Long sizeInBytes, String creationDate ) {
         this.arn = Check.notBlank( arn );
         this.name = Check.notBlank( name );
         this.numberOfArchives = numberOfArchives;
         this.sizeInBytes = sizeInBytes;
+        this.creationDate = creationDate;
     }
 
     @Override
