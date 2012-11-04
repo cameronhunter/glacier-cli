@@ -26,7 +26,7 @@ public class Vaults implements Callable<Set<Vault>> {
         this.client = notNull( client );
     }
 
-    public Set<Vault> call() throws Exception {
+    public Set<Vault> call() {
         return listVaults( client, new ListVaultsRequest( "-" ) );
     }
 
