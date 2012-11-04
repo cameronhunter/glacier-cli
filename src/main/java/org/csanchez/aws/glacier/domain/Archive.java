@@ -19,7 +19,7 @@ public final class Archive {
 
     @Override
     public String toString() {
-        return tsv( archiveId, description, creationDate, sizeInBytes, byteCountToDisplaySize( sizeInBytes ) );
+        return tsv( description, creationDate, byteCountToDisplaySize( sizeInBytes ), sizeInBytes, archiveId );
     }
     
     @Override

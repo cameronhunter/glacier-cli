@@ -23,7 +23,7 @@ public final class Vault {
     
     @Override
     public String toString() {
-        return tsv( arn, name, creationDate, numberOfArchives, sizeInBytes, byteCountToDisplaySize( sizeInBytes ) );
+        return tsv( name, creationDate, numberOfArchives, byteCountToDisplaySize( sizeInBytes ), sizeInBytes, arn );
     }
 
     @Override
