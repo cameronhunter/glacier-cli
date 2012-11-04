@@ -4,9 +4,6 @@ import static org.apache.commons.io.FileUtils.byteCountToDisplaySize;
 
 import org.csanchez.aws.glacier.utils.Check;
 
-import com.amazonaws.services.glacier.model.DescribeVaultOutput;
-import com.google.common.base.Function;
-
 public final class Vault {
 
     public final String name;
@@ -22,11 +19,6 @@ public final class Vault {
         this.sizeInBytes = sizeInBytes;
     }
 
-    public static Vault from( DescribeVaultOutput response ) {
-        Check.notNull( response );
-        return new Vault( response.getVaultARN(), response.getVaultName(), response.getNumberOfArchives(), response.getSizeInBytes() );
-    }
-    
     @Override
     public String toString() {
         return "Vault[name=" + name + ", numberOfArchives=" + numberOfArchives + ", size=" + byteCountToDisplaySize( sizeInBytes ) + "]";
