@@ -52,7 +52,9 @@ public class Inventory implements Callable<File> {
             LOG.info( "Successfully retrieved inventory of vault \"" + vault + "\"" );
             return temp;
         } catch ( Exception e ) {
-            throw new RuntimeException( "Failed to retrieve inventory of vault \"" + vault + "\"", e );
+            String errorMessage = "Failed to retrieve inventory of vault \"" + vault + "\"";
+            LOG.error( errorMessage, e );
+            throw new RuntimeException( errorMessage, e );
         } finally {
             IOUtils.closeQuietly( out );
             IOUtils.closeQuietly( in );

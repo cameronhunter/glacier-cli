@@ -8,6 +8,8 @@ import static org.csanchez.aws.glacier.utils.Check.notNull;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.csanchez.aws.glacier.domain.Vault;
 import org.csanchez.aws.glacier.utils.Check;
 
@@ -20,6 +22,8 @@ import com.google.common.collect.ImmutableSet;
 
 public class Vaults implements Callable<Set<Vault>> {
 
+    private static final Log LOG = LogFactory.getLog( Vaults.class );
+    
     private final AmazonGlacierClient client;
 
     public Vaults( AmazonGlacierClient client ) {
@@ -27,7 +31,13 @@ public class Vaults implements Callable<Set<Vault>> {
     }
 
     public Set<Vault> call() {
-        return listVaults( client, new ListVaultsRequest( "-" ) );
+        try {
+            return listVaults( client, new ListVaultsRequest( "-" ) );
+        } catch( Exception e ) {
+            String errorMessage = "Couldn't retrieve vaults";
+            LOG.error( errorMessage, e );
+            throw new RuntimeException( errorMessage, e );
+        }
     }
 
     private static Set<Vault> listVaults( AmazonGlacierClient client, ListVaultsRequest request ) {

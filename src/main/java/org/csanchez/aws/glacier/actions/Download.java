@@ -39,7 +39,9 @@ public class Download implements Callable<File> {
             LOG.info( "Sucessfully downloaded archiveId \"" + archiveId + "\" from vault \"" + vault + "\"" );
             return temp;
         } catch ( Exception e ) {
-            throw new RuntimeException( "Failed to download archiveId \"" + archiveId + "\" from vault \"" + vault + "\"", e );
+            String errorMessage = "Failed to download archiveId \"" + archiveId + "\" from vault \"" + vault + "\"";
+            LOG.error( errorMessage, e );
+            throw new RuntimeException( errorMessage, e );
         }
     }
 

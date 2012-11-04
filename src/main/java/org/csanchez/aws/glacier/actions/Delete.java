@@ -33,7 +33,7 @@ public class Delete implements Callable<Boolean> {
             LOG.info( "Successfully deleted archiveId \"" + archiveId + "\" from vault \"" + vault + "\"" );
             return true;
         } catch ( Exception e ) {
-            LOG.info( "Failed to delete archiveId \"" + archiveId + "\" from vault \"" + vault + "\"" );
+            LOG.error( "Failed to delete archiveId \"" + archiveId + "\" from vault \"" + vault + "\"" );
             return false;
         }
     }

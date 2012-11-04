@@ -106,8 +106,6 @@ public class Main {
             }
         } catch ( IllegalArgumentException ignore ) {
             // Fall-through for validation
-        } catch ( Throwable e ) {
-            LOG.error( e.getMessage(), e );
         } finally {
             IOUtils.closeQuietly( glacier );
         }

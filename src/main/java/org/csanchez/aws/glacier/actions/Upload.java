@@ -32,7 +32,7 @@ public class Upload implements Callable<String> {
         this.archive = notBlank( archive );
     }
 
-    public String call() throws Exception {
+    public String call() {
         try {
             File upload = new File( archive );
             
@@ -48,7 +48,9 @@ public class Upload implements Callable<String> {
             LOG.info( "Archive \"" + archive + "\" (" + archiveId + ") successfully uploaded to vault \"" + vault + "\"" );
             return archiveId;
         } catch ( Exception e ) {
-            throw new RuntimeException( "Failed to upload archive \"" + archive + "\" to vault \"" + vault + "\"", e );
+            String errorMessage = "Failed to upload archive \"" + archive + "\" to vault \"" + vault + "\"";
+            LOG.error( errorMessage, e );
+            throw new RuntimeException( errorMessage, e );
         }
     }
 
