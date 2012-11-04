@@ -18,6 +18,7 @@ accessKey=…
 * `download vault_name archiveId output_file`
 * `delete vault_name archiveId`
 * `inventory vault_name`
+* `vaults`
 
 ## Command line options
 
@@ -48,6 +49,9 @@ Upload file1 and file2 to vault `pictures` in Europe region
 
 `java -jar glacier-1.0-jar-with-dependencies.jar -region eu-west-1 upload pictures file1 file2`
 
+List vaults in Europe region
+
+`java -jar glacier-1.0-jar-with-dependencies.jar -region eu-west-1 vaults`
 
 
 ## Building
