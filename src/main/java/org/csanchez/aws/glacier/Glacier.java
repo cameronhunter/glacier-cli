@@ -62,6 +62,8 @@ public class Glacier implements Closeable {
         LOG.info( "Using \"" + region + "\" region" );
 
         this.vaults = ImmutableSet.copyOf( transform( new Vaults( client ).call(), VAULT_NAME ) );
+        
+        LOG.info( "Found " + vaults.size() + " vault(s) in \"" + region + "\" region" );
     }
 
     public Future<Collection<Vault>> vaults() {

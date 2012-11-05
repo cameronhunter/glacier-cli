@@ -35,9 +35,10 @@ public class Vaults implements Callable<Collection<Vault>> {
 
     public Collection<Vault> call() {
         try {
+            LOG.info( "Retrieving vault list" );
             return listVaults( client, new ListVaultsRequest( "-" ) );
         } catch ( Exception e ) {
-            String errorMessage = "Couldn't retrieve vaults";
+            String errorMessage = "Couldn't retrieve vault list";
             LOG.error( errorMessage, e );
             throw new RuntimeException( errorMessage, e );
         }
