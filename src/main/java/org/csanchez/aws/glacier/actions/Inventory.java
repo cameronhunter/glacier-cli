@@ -1,7 +1,6 @@
 package org.csanchez.aws.glacier.actions;
 
 import static com.google.common.collect.Iterables.transform;
-import static org.csanchez.aws.glacier.contract.Contract.GLACIER_DATETIME_FORMAT;
 import static org.csanchez.aws.glacier.utils.Check.notBlank;
 import static org.csanchez.aws.glacier.utils.Check.notNull;
 
@@ -19,6 +18,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.csanchez.aws.glacier.domain.Archive;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.format.ISODateTimeFormat;
 
 import com.amazonaws.services.glacier.AmazonGlacierClient;
 import com.amazonaws.services.glacier.model.DescribeJobRequest;
@@ -90,7 +90,7 @@ public class Inventory implements Callable<Collection<Archive>> {
         public Archive apply( JsonNode node ) {
             String archiveId = node.path( "ArchiveId" ).getTextValue();
             String description = node.path( "ArchiveDescription" ).getTextValue();
-            DateTime creationDate = GLACIER_DATETIME_FORMAT.parseDateTime( node.path( "CreationDate" ).getTextValue() ).withZone( DateTimeZone.UTC );
+            DateTime creationDate = ISODateTimeFormat.dateTimeParser().parseDateTime( node.path( "CreationDate" ).getTextValue() ).withZone( DateTimeZone.UTC );
             long sizeInBytes = node.path( "Size" ).getLongValue();
 
             return new Archive( archiveId, description, creationDate, sizeInBytes );

@@ -11,10 +11,10 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.csanchez.aws.glacier.contract.Contract;
 import org.csanchez.aws.glacier.domain.Vault;
 import org.csanchez.aws.glacier.utils.Check;
 import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 
 import com.amazonaws.services.glacier.AmazonGlacierClient;
 import com.amazonaws.services.glacier.model.DescribeVaultOutput;
@@ -64,7 +64,7 @@ public class Vaults implements Callable<Collection<Vault>> {
             String name = response.getVaultName();
             Long numberOfArchives = response.getNumberOfArchives();
             Long sizeInBytes = response.getSizeInBytes();
-            DateTime creationDate = Contract.GLACIER_DATETIME_FORMAT.parseDateTime( response.getCreationDate() );
+            DateTime creationDate = ISODateTimeFormat.dateTimeParser().parseDateTime( response.getCreationDate() );
             
             return new Vault( arn, name, numberOfArchives, sizeInBytes, creationDate );
         }

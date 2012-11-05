@@ -3,8 +3,8 @@ package org.csanchez.aws.glacier.domain;
 import static org.apache.commons.io.FileUtils.byteCountToDisplaySize;
 import static org.csanchez.aws.glacier.utils.CharDelimitedString.tsv;
 
-import org.csanchez.aws.glacier.contract.Contract;
 import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 
 public final class Archive {
 
@@ -22,7 +22,7 @@ public final class Archive {
 
     @Override
     public String toString() {
-        return tsv( description, Contract.GLACIER_DATETIME_FORMAT.print( creationDate ), byteCountToDisplaySize( sizeInBytes ), sizeInBytes, archiveId );
+        return tsv( description, ISODateTimeFormat.dateTimeNoMillis().print( creationDate ), byteCountToDisplaySize( sizeInBytes ), sizeInBytes, archiveId );
     }
     
     @Override

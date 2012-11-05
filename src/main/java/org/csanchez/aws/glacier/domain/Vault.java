@@ -3,9 +3,9 @@ package org.csanchez.aws.glacier.domain;
 import static org.apache.commons.io.FileUtils.byteCountToDisplaySize;
 import static org.csanchez.aws.glacier.utils.CharDelimitedString.tsv;
 
-import org.csanchez.aws.glacier.contract.Contract;
 import org.csanchez.aws.glacier.utils.Check;
 import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 
 public final class Vault {
 
@@ -25,7 +25,7 @@ public final class Vault {
     
     @Override
     public String toString() {
-        return tsv( name, Contract.GLACIER_DATETIME_FORMAT.print( creationDate ), numberOfArchives, byteCountToDisplaySize( sizeInBytes ), sizeInBytes, arn );
+        return tsv( name, ISODateTimeFormat.dateTimeNoMillis().print( creationDate ), numberOfArchives, byteCountToDisplaySize( sizeInBytes ), sizeInBytes, arn );
     }
 
     @Override
