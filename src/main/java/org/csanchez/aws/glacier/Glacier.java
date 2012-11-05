@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -22,6 +23,7 @@ import org.csanchez.aws.glacier.actions.Inventory;
 import org.csanchez.aws.glacier.actions.Upload;
 import org.csanchez.aws.glacier.actions.Vaults;
 import org.csanchez.aws.glacier.domain.Archive;
+import org.csanchez.aws.glacier.domain.Callback;
 import org.csanchez.aws.glacier.domain.Vault;
 
 import com.amazonaws.auth.AWSCredentials;
@@ -38,7 +40,7 @@ import com.google.common.collect.ImmutableSet;
 public class Glacier implements Closeable {
 
     private static final Log LOG = LogFactory.getLog( Glacier.class );
-    
+
     private final ExecutorService workers;
     private final AmazonGlacierClient client;
     private final AWSCredentials credentials;
@@ -53,13 +55,13 @@ public class Glacier implements Closeable {
         this.workers = notNull( workers );
         this.credentials = notNull( credentials );
         this.region = notBlank( region );
-        
+
         this.client = new AmazonGlacierClient( credentials );
         this.client.setEndpoint( "https://glacier." + region + ".amazonaws.com/" );
-        
+
         LOG.info( "Using \"" + region + "\" region" );
-        
-        this.vaults = ImmutableSet.copyOf( transform( new Vaults( client ).call(), VAULT_NAME ));
+
+        this.vaults = ImmutableSet.copyOf( transform( new Vaults( client ).call(), VAULT_NAME ) );
     }
 
     public Future<Collection<Vault>> vaults() {
@@ -71,9 +73,20 @@ public class Glacier implements Closeable {
         return workers.submit( new Inventory( client, vault ) );
     }
 
-    public Future<String> upload( String vault, String archiveName ) {
+    public Future<Archive> upload( String vault, String archiveName ) {
+        return upload( vault, archiveName, null );
+    }
+
+    public Future<Archive> upload( final String vault, final String archiveName, final Callback<Archive> after ) {
         checkVaultExists( vault );
-        return workers.submit( new Upload( client, credentials, vault, archiveName ) );
+        return workers.submit( new Callable<Archive>() {
+            @Override
+            public Archive call() throws Exception {
+                Archive archive = new Upload( client, credentials, vault, archiveName ).call();
+                if ( after != null ) after.run( archive );
+                return archive;
+            }
+        } );
     }
 
     public Future<File> download( String vault, String archiveId ) {
@@ -89,11 +102,11 @@ public class Glacier implements Closeable {
     public void close() throws IOException {
         workers.shutdown();
     }
-    
+
     private void checkVaultExists( String vault ) {
         Validate.isTrue( vaults.contains( vault ), "Vault \"" + vault + "\" doesn't exist in \"" + region + "\" region. Available vaults: " + vaults );
     }
-    
+
     private static final Function<Vault, String> VAULT_NAME = new Function<Vault, String>() {
         public String apply( Vault vault ) {
             return vault.name;

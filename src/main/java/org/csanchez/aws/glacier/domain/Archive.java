@@ -3,14 +3,16 @@ package org.csanchez.aws.glacier.domain;
 import static org.apache.commons.io.FileUtils.byteCountToDisplaySize;
 import static org.csanchez.aws.glacier.utils.CharDelimitedString.tsv;
 
+import org.joda.time.DateTime;
+
 public final class Archive {
 
     public final String archiveId;
     public final String description;
-    public final String creationDate;
+    public final DateTime creationDate;
     public final Long sizeInBytes;
 
-    public Archive( String archiveId, String description, String creationDate, Long sizeInBytes ) {
+    public Archive( String archiveId, String description, DateTime creationDate, Long sizeInBytes ) {
         this.archiveId = archiveId;
         this.description = description;
         this.creationDate = creationDate;

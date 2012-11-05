@@ -17,6 +17,8 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.csanchez.aws.glacier.domain.Action;
+import org.csanchez.aws.glacier.domain.Archive;
+import org.csanchez.aws.glacier.domain.Callback;
 import org.csanchez.aws.glacier.utils.Check;
 
 import com.amazonaws.auth.AWSCredentials;
@@ -66,13 +68,12 @@ public class Main {
                 case UPLOAD:
                     Validate.isTrue( arguments.size() >= 3 );
 
-                    // TODO: output filename and archiveId to sysout
                     List<String> uploads = arguments.subList( 2, arguments.size() );
 
                     LOG.info( uploads.size() + " archive(s) requested for upload." );
 
                     for ( String archive : uploads ) {
-                        glacier.upload( arguments.get( 1 ), archive );
+                        glacier.upload( arguments.get( 1 ), archive, OUTPUT_ARCHIVE );
                     }
                     return;
 
@@ -138,4 +139,11 @@ public class Main {
             System.out.println( item );
         }
     }
+
+    private static final Callback<Archive> OUTPUT_ARCHIVE = new Callback<Archive>() {
+        @Override
+        public void run( Archive archive ) {
+            System.out.println( archive );
+        }
+    };
 }

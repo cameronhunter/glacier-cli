@@ -10,13 +10,16 @@ import java.util.concurrent.Callable;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.csanchez.aws.glacier.domain.Archive;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.glacier.AmazonGlacierClient;
 import com.amazonaws.services.glacier.transfer.ArchiveTransferManager;
 import com.amazonaws.services.glacier.transfer.UploadResult;
 
-public class Upload implements Callable<String> {
+public class Upload implements Callable<Archive> {
 
     private static final Log LOG = LogFactory.getLog( Upload.class );
 
@@ -32,7 +35,7 @@ public class Upload implements Callable<String> {
         this.archive = notBlank( archive );
     }
 
-    public String call() {
+    public Archive call() {
         try {
             File upload = new File( archive );
             
@@ -46,7 +49,8 @@ public class Upload implements Callable<String> {
             String archiveId = result.getArchiveId();
 
             LOG.info( "Archive \"" + archive + "\" (" + archiveId + ") successfully uploaded to vault \"" + vault + "\"" );
-            return archiveId;
+            
+            return new Archive( result.getArchiveId(), archive, new DateTime( DateTimeZone.UTC ), upload.length() );
         } catch ( Exception e ) {
             String errorMessage = "Failed to upload archive \"" + archive + "\" to vault \"" + vault + "\"";
             LOG.error( errorMessage, e );
