@@ -11,8 +11,10 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.csanchez.aws.glacier.contract.Contract;
 import org.csanchez.aws.glacier.domain.Vault;
 import org.csanchez.aws.glacier.utils.Check;
+import org.joda.time.DateTime;
 
 import com.amazonaws.services.glacier.AmazonGlacierClient;
 import com.amazonaws.services.glacier.model.DescribeVaultOutput;
@@ -24,7 +26,7 @@ import com.google.common.collect.ImmutableSet;
 public class Vaults implements Callable<Collection<Vault>> {
 
     private static final Log LOG = LogFactory.getLog( Vaults.class );
-    
+
     private final AmazonGlacierClient client;
 
     public Vaults( AmazonGlacierClient client ) {
@@ -34,7 +36,7 @@ public class Vaults implements Callable<Collection<Vault>> {
     public Collection<Vault> call() {
         try {
             return listVaults( client, new ListVaultsRequest( "-" ) );
-        } catch( Exception e ) {
+        } catch ( Exception e ) {
             String errorMessage = "Couldn't retrieve vaults";
             LOG.error( errorMessage, e );
             throw new RuntimeException( errorMessage, e );
@@ -53,11 +55,18 @@ public class Vaults implements Callable<Collection<Vault>> {
 
         return unmodifiableSet( vaults );
     }
-    
+
     private static final Function<DescribeVaultOutput, Vault> TO_VAULT = new Function<DescribeVaultOutput, Vault>() {
         public Vault apply( DescribeVaultOutput response ) {
             Check.notNull( response );
-            return new Vault( response.getVaultARN(), response.getVaultName(), response.getNumberOfArchives(), response.getSizeInBytes(), response.getCreationDate() );
+            
+            String arn = response.getVaultARN();
+            String name = response.getVaultName();
+            Long numberOfArchives = response.getNumberOfArchives();
+            Long sizeInBytes = response.getSizeInBytes();
+            DateTime creationDate = Contract.GLACIER_DATETIME_FORMAT.parseDateTime( response.getCreationDate() );
+            
+            return new Vault( arn, name, numberOfArchives, sizeInBytes, creationDate );
         }
     };
 

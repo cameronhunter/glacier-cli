@@ -3,7 +3,9 @@ package org.csanchez.aws.glacier.domain;
 import static org.apache.commons.io.FileUtils.byteCountToDisplaySize;
 import static org.csanchez.aws.glacier.utils.CharDelimitedString.tsv;
 
+import org.csanchez.aws.glacier.contract.Contract;
 import org.csanchez.aws.glacier.utils.Check;
+import org.joda.time.DateTime;
 
 public final class Vault {
 
@@ -11,9 +13,9 @@ public final class Vault {
     public final String name;
     public final Long numberOfArchives;
     public final Long sizeInBytes;
-    public final String creationDate;
+    public final DateTime creationDate;
 
-    public Vault( String arn, String name, Long numberOfArchives, Long sizeInBytes, String creationDate ) {
+    public Vault( String arn, String name, Long numberOfArchives, Long sizeInBytes, DateTime creationDate ) {
         this.arn = Check.notBlank( arn );
         this.name = Check.notBlank( name );
         this.numberOfArchives = numberOfArchives;
@@ -23,7 +25,7 @@ public final class Vault {
     
     @Override
     public String toString() {
-        return tsv( name, creationDate, numberOfArchives, byteCountToDisplaySize( sizeInBytes ), sizeInBytes, arn );
+        return tsv( name, Contract.GLACIER_DATETIME_FORMAT.print( creationDate ), numberOfArchives, byteCountToDisplaySize( sizeInBytes ), sizeInBytes, arn );
     }
 
     @Override
