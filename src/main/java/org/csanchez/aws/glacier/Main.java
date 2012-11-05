@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
@@ -16,8 +17,6 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.csanchez.aws.glacier.domain.Action;
-import org.csanchez.aws.glacier.domain.Archive;
-import org.csanchez.aws.glacier.domain.Vault;
 import org.csanchez.aws.glacier.utils.Check;
 
 import com.amazonaws.auth.AWSCredentials;
@@ -55,30 +54,12 @@ public class Main {
             switch ( action ) {
                 case VAULTS:
                     Validate.isTrue( arguments.size() == 1 );
-
-                    Collection<Vault> vaults = glacier.vaults().get();
-                    for ( Vault vault : vaults ) {
-                        System.out.println( vault );
-                    }
-
-                    if ( vaults.isEmpty() ) {
-                        LOG.info( "There are no vaults in \"" + region + "\" region" );
-                    }
-
+                    output( glacier.vaults(), "There are no vaults in \"" + region + "\" region" );
                     return;
 
                 case INVENTORY:
                     Validate.isTrue( arguments.size() == 2 );
-
-                    Collection<Archive> inventory = glacier.inventory( arguments.get( 1 ) ).get();
-                    for ( Archive archive : inventory ) {
-                        System.out.println( archive );
-                    }
-                    
-                    if ( inventory.isEmpty() ) {
-                        LOG.info( "There are no archives in vault \"" + arguments.get( 1 ) + "\"" );
-                    }
-                    
+                    output( glacier.inventory( arguments.get( 1 ) ), "There are no archives in vault \"" + arguments.get( 1 ) + "\"" );
                     return;
 
                 case UPLOAD:
@@ -143,5 +124,17 @@ public class Main {
         options.addOption( output );
 
         return options;
+    }
+
+    private static <T> void output( Future<Collection<T>> future, String empty ) throws Exception {
+        Collection<T> collection = future.get();
+        if ( collection == null || collection.isEmpty() ) {
+            LOG.info( empty );
+            return;
+        }
+
+        for ( T item : collection ) {
+            System.out.println( item );
+        }
     }
 }
