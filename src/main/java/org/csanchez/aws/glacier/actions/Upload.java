@@ -46,9 +46,8 @@ public class Upload implements Callable<Archive> {
 
             ArchiveTransferManager atm = new ArchiveTransferManager( client, credentials );
             UploadResult result = atm.upload( vault, archive, upload );
-            String archiveId = result.getArchiveId();
 
-            LOG.info( "Archive \"" + archive + "\" (" + archiveId + ") successfully uploaded to vault \"" + vault + "\"" );
+            LOG.info( "Archive \"" + archive + "\" successfully uploaded to vault \"" + vault + "\"" );
             
             return new Archive( result.getArchiveId(), archive, new DateTime( DateTimeZone.UTC ), upload.length() );
         } catch ( Exception e ) {
