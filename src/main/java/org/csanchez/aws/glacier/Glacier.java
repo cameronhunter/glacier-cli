@@ -62,7 +62,7 @@ public class Glacier implements Closeable {
         this.vaults = ImmutableSet.copyOf( transform( new Vaults( client ).call(), VAULT_NAME ));
     }
 
-    public Future<Set<Vault>> vaults() {
+    public Future<Collection<Vault>> vaults() {
         return workers.submit( new Vaults( client ) );
     }
 

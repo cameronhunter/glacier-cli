@@ -5,6 +5,7 @@ import static com.google.common.collect.Sets.union;
 import static java.util.Collections.unmodifiableSet;
 import static org.csanchez.aws.glacier.utils.Check.notNull;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -20,7 +21,7 @@ import com.amazonaws.services.glacier.model.ListVaultsResult;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 
-public class Vaults implements Callable<Set<Vault>> {
+public class Vaults implements Callable<Collection<Vault>> {
 
     private static final Log LOG = LogFactory.getLog( Vaults.class );
     
@@ -30,7 +31,7 @@ public class Vaults implements Callable<Set<Vault>> {
         this.client = notNull( client );
     }
 
-    public Set<Vault> call() {
+    public Collection<Vault> call() {
         try {
             return listVaults( client, new ListVaultsRequest( "-" ) );
         } catch( Exception e ) {

@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
@@ -57,7 +56,7 @@ public class Main {
                 case VAULTS:
                     Validate.isTrue( arguments.size() == 1 );
 
-                    Set<Vault> vaults = glacier.vaults().get();
+                    Collection<Vault> vaults = glacier.vaults().get();
                     for ( Vault vault : vaults ) {
                         System.out.println( vault );
                     }
