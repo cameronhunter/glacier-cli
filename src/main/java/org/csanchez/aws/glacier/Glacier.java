@@ -94,6 +94,7 @@ public class Glacier implements Closeable {
         return workers.submit( new Delete( client, vault, archiveId ) );
     }
 
+    @Override
     public void close() throws IOException {
         workers.shutdown();
     }
