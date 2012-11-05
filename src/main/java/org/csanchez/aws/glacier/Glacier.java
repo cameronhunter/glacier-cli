@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -22,6 +21,7 @@ import org.csanchez.aws.glacier.actions.Download;
 import org.csanchez.aws.glacier.actions.Inventory;
 import org.csanchez.aws.glacier.actions.Upload;
 import org.csanchez.aws.glacier.actions.Vaults;
+import org.csanchez.aws.glacier.domain.After;
 import org.csanchez.aws.glacier.domain.Archive;
 import org.csanchez.aws.glacier.domain.Callback;
 import org.csanchez.aws.glacier.domain.Vault;
@@ -62,7 +62,7 @@ public class Glacier implements Closeable {
         LOG.info( "Using \"" + region + "\" region" );
 
         this.vaults = ImmutableSet.copyOf( transform( new Vaults( client ).call(), VAULT_NAME ) );
-        
+
         LOG.info( "Found " + vaults.size() + " vault(s) in \"" + region + "\" region" );
     }
 
@@ -79,16 +79,9 @@ public class Glacier implements Closeable {
         return upload( vault, archiveName, null );
     }
 
-    public Future<Archive> upload( final String vault, final String archiveName, final Callback<Archive> after ) {
+    public Future<Archive> upload( String vault, String archiveName, Callback<Archive> callback ) {
         checkVaultExists( vault );
-        return workers.submit( new Callable<Archive>() {
-            @Override
-            public Archive call() throws Exception {
-                Archive archive = new Upload( client, credentials, vault, archiveName ).call();
-                if ( after != null ) after.run( archive );
-                return archive;
-            }
-        } );
+        return workers.submit( After.create( new Upload( client, credentials, vault, archiveName ), callback ) );
     }
 
     public Future<File> download( String vault, String archiveId ) {
