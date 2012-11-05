@@ -46,11 +46,12 @@ public class Main {
         List<String> arguments = Arrays.asList( cmd.getArgs() );
 
         String region = cmd.getOptionValue( "region", "us-east-1" );
-        Action action = Check.notNull( Action.fromName( arguments.get( 0 ) ), "No action provided" );
 
         Glacier glacier = new Glacier( credentials, region );
 
         try {
+            Action action = Check.notNull( Action.fromName( arguments.get( 0 ) ), "No action provided" );
+
             switch ( action ) {
                 case VAULTS:
                     Validate.isTrue( arguments.size() == 1 );
