@@ -1,4 +1,4 @@
-# Glacier CLI
+# Glacier CLI [![Build Status](https://secure.travis-ci.org/cameronhunter/glacier-cli.png)](http://travis-ci.org/cameronhunter/glacier-cli)
 
 A command line client to [Amazon Glacier](http://aws.amazon.com/glacier).
 
