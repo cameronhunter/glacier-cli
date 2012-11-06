@@ -9,20 +9,20 @@ import org.joda.time.DateTime;
 public final class Archive {
 
     public final String archiveId;
-    public final String description;
+    public final String name;
     public final DateTime creationDate;
     public final Long sizeInBytes;
 
     public Archive( String archiveId, String description, DateTime creationDate, Long sizeInBytes ) {
         this.archiveId = archiveId;
-        this.description = description;
+        this.name = description;
         this.creationDate = creationDate;
         this.sizeInBytes = sizeInBytes;
     }
 
     @Override
     public String toString() {
-        return tsv( description, dateTimeNoMillis().print( creationDate ), byteCountToDisplaySize( sizeInBytes ), sizeInBytes, archiveId );
+        return tsv( name, dateTimeNoMillis().print( creationDate ), byteCountToDisplaySize( sizeInBytes ), sizeInBytes, archiveId );
     }
     
     @Override

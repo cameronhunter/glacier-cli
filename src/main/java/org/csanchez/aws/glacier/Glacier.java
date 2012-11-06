@@ -28,13 +28,14 @@ import org.csanchez.aws.glacier.domain.Vault;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.glacier.AmazonGlacierClient;
+import com.amazonaws.services.glacier.transfer.ArchiveTransferManager;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 
 /**
  * Uses Glacier high level API for uploading, downloading, deleting files, and
  * the low-level one for retrieving vault inventory.
- * 
+ *
  * @see http://docs.amazonwebservices.com/amazonglacier/latest/dev/
  */
 public class Glacier implements Closeable {
@@ -81,7 +82,9 @@ public class Glacier implements Closeable {
 
     public Future<Archive> upload( String vault, String archiveName, Callback<Archive> callback ) {
         checkVaultExists( vault );
-        return workers.submit( After.create( new Upload( client, credentials, vault, archiveName ), callback ) );
+        File archive = new File( archiveName );
+        ArchiveTransferManager atm = new ArchiveTransferManager( client, credentials );
+        return workers.submit( After.create( new Upload( atm, vault, archive ), callback ) );
     }
 
     public Future<File> download( String vault, String archiveId ) {
@@ -104,6 +107,7 @@ public class Glacier implements Closeable {
     }
 
     private static final Function<Vault, String> VAULT_NAME = new Function<Vault, String>() {
+        @Override
         public String apply( Vault vault ) {
             return vault.name;
         }

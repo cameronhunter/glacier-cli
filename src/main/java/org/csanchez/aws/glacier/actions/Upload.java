@@ -5,6 +5,7 @@ import static org.csanchez.aws.glacier.utils.Check.notBlank;
 import static org.csanchez.aws.glacier.utils.Check.notNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.Validate;
@@ -14,8 +15,6 @@ import org.csanchez.aws.glacier.domain.Archive;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.services.glacier.AmazonGlacierClient;
 import com.amazonaws.services.glacier.transfer.ArchiveTransferManager;
 import com.amazonaws.services.glacier.transfer.UploadResult;
 
@@ -23,38 +22,43 @@ public class Upload implements Callable<Archive> {
 
     private static final Log LOG = LogFactory.getLog( Upload.class );
 
-    private final AmazonGlacierClient client;
-    private final AWSCredentials credentials;
+    private final ArchiveTransferManager atm;
     private final String vault;
-    private final String archive;
+    private final File archive;
 
-    public Upload( AmazonGlacierClient client, AWSCredentials credentials, String vault, String archive ) {
-        this.client = notNull( client );
-        this.credentials = notNull( credentials );
+    public Upload( ArchiveTransferManager atm, String vault, File archive ) {
+        this.atm = notNull( atm );
         this.vault = notBlank( vault );
-        this.archive = notBlank( archive );
+        this.archive = validate( archive );
     }
 
+    @Override
     public Archive call() {
         try {
-            File upload = new File( archive );
-            
-            Validate.isTrue( upload.exists(), "File \"" + archive + "\" doesn't exist" );
-            Validate.isTrue( upload.isFile(), "Cannot directly upload a directory to Glacier. Create an archive from it first." );
-            
-            LOG.info( "Uploading \"" + archive + "\" (" + byteCountToDisplaySize( upload.length() ) + ") to vault \"" + vault + "\"" );
-
-            ArchiveTransferManager atm = new ArchiveTransferManager( client, credentials );
-            UploadResult result = atm.upload( vault, archive, upload );
-
-            LOG.info( "Archive \"" + archive + "\" successfully uploaded to vault \"" + vault + "\"" );
-            
-            return new Archive( result.getArchiveId(), archive, new DateTime( DateTimeZone.UTC ), upload.length() );
+            return upload( archive, vault, atm );
         } catch ( Exception e ) {
-            String errorMessage = "Failed to upload archive \"" + archive + "\" to vault \"" + vault + "\"";
-            LOG.error( errorMessage, e );
-            throw new RuntimeException( errorMessage, e );
+            throw new RuntimeException( "Failed to upload archive \"" + archive + "\" to vault \"" + vault + "\"", e );
         }
+    }
+
+    private static File validate( File upload ) {
+        Validate.notNull( upload );
+        Validate.isTrue( upload.exists(), "File \"" + upload.getAbsolutePath() + "\" doesn't exist" );
+        Validate.isTrue( upload.isFile(), "Cannot directly upload a directory to Glacier. Create an archive from it first." );
+
+        return upload;
+    }
+
+    private static Archive upload( File upload, String vault, ArchiveTransferManager atm ) throws IOException {
+        String filename = upload.getName();
+
+        LOG.info( "Uploading \"" + filename + "\" (" + byteCountToDisplaySize( upload.length() ) + ") to vault \"" + vault + "\"" );
+
+        UploadResult result = atm.upload( vault, filename, upload );
+
+        LOG.info( "Archive \"" + filename + "\" successfully uploaded to vault \"" + vault + "\"" );
+
+        return new Archive( result.getArchiveId(), filename, new DateTime( DateTimeZone.UTC ), upload.length() );
     }
 
 }
