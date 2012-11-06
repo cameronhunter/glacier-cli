@@ -46,6 +46,7 @@ public class Inventory implements Callable<Collection<Archive>> {
         this.mapper = new ObjectMapper();
     }
 
+    @Override
     public Collection<Archive> call() {
         InputStream in = null;
         try {
@@ -66,9 +67,7 @@ public class Inventory implements Callable<Collection<Archive>> {
 
             return ImmutableSet.copyOf( transform( node.path( "ArchiveList" ), TO_ARCHIVE ) );
         } catch ( Exception e ) {
-            String errorMessage = "Failed to retrieve inventory of vault \"" + vault + "\"";
-            LOG.error( errorMessage, e );
-            throw new RuntimeException( errorMessage, e );
+            throw new RuntimeException( "Failed to retrieve inventory of vault \"" + vault + "\"", e );
         } finally {
             IOUtils.closeQuietly( in );
         }
@@ -87,6 +86,7 @@ public class Inventory implements Callable<Collection<Archive>> {
     }
 
     private static final Function<JsonNode, Archive> TO_ARCHIVE = new Function<JsonNode, Archive>() {
+        @Override
         public Archive apply( JsonNode node ) {
             String archiveId = node.path( "ArchiveId" ).getTextValue();
             String description = node.path( "ArchiveDescription" ).getTextValue();
