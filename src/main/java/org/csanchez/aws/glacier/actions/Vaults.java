@@ -33,14 +33,13 @@ public class Vaults implements Callable<Collection<Vault>> {
         this.client = notNull( client );
     }
 
+    @Override
     public Collection<Vault> call() {
         try {
             LOG.info( "Retrieving vault list" );
             return listVaults( client, new ListVaultsRequest( "-" ) );
         } catch ( Exception e ) {
-            String errorMessage = "Couldn't retrieve vault list";
-            LOG.error( errorMessage, e );
-            throw new RuntimeException( errorMessage, e );
+            throw new RuntimeException( "Couldn't retrieve vault list", e );
         }
     }
 
@@ -49,8 +48,9 @@ public class Vaults implements Callable<Collection<Vault>> {
 
         Set<Vault> vaults = ImmutableSet.copyOf( transform( result.getVaultList(), TO_VAULT ) );
 
-        if ( result.getMarker() != null ) {
-            ListVaultsRequest nextRequest = new ListVaultsRequest( "-" ).withMarker( result.getMarker() );
+        String marker = result.getMarker();
+        if ( marker != null ) {
+            ListVaultsRequest nextRequest = new ListVaultsRequest( "-" ).withMarker( marker );
             return union( vaults, listVaults( client, nextRequest ) );
         }
 
@@ -58,15 +58,16 @@ public class Vaults implements Callable<Collection<Vault>> {
     }
 
     private static final Function<DescribeVaultOutput, Vault> TO_VAULT = new Function<DescribeVaultOutput, Vault>() {
+        @Override
         public Vault apply( DescribeVaultOutput response ) {
             Check.notNull( response );
-            
+
             String arn = response.getVaultARN();
             String name = response.getVaultName();
             Long numberOfArchives = response.getNumberOfArchives();
             Long sizeInBytes = response.getSizeInBytes();
             DateTime creationDate = ISODateTimeFormat.dateTimeParser().parseDateTime( response.getCreationDate() );
-            
+
             return new Vault( arn, name, numberOfArchives, sizeInBytes, creationDate );
         }
     };
