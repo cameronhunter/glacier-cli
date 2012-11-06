@@ -83,13 +83,14 @@ public class Glacier implements Closeable {
     public Future<Archive> upload( String vault, String archiveName, Callback<Archive> callback ) {
         checkVaultExists( vault );
         File archive = new File( archiveName );
-        ArchiveTransferManager atm = new ArchiveTransferManager( client, credentials );
-        return workers.submit( After.create( new Upload( atm, vault, archive ), callback ) );
+        ArchiveTransferManager transferManager = new ArchiveTransferManager( client, credentials );
+        return workers.submit( After.create( new Upload( transferManager, vault, archive ), callback ) );
     }
 
     public Future<File> download( String vault, String archiveId ) {
         checkVaultExists( vault );
-        return workers.submit( new Download( client, credentials, vault, archiveId ) );
+        ArchiveTransferManager transferManager = new ArchiveTransferManager( client, credentials );
+        return workers.submit( new Download( transferManager, vault, archiveId ) );
     }
 
     public Future<Boolean> delete( String vault, String archiveId ) {

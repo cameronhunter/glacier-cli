@@ -9,39 +9,37 @@ import java.util.concurrent.Callable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.services.glacier.AmazonGlacierClient;
 import com.amazonaws.services.glacier.transfer.ArchiveTransferManager;
 
 public class Download implements Callable<File> {
 
     private static final Log LOG = LogFactory.getLog( Download.class );
-    
-    private final AmazonGlacierClient client;
-    private final AWSCredentials credentials;
+
+    private final ArchiveTransferManager transferManager;
     private final String vault;
     private final String archiveId;
 
-    public Download( AmazonGlacierClient client, AWSCredentials credentials, String vault, String archiveId ) {
-        this.client = notNull( client );
-        this.credentials = notNull( credentials );
+    public Download( ArchiveTransferManager transferManager, String vault, String archiveId ) {
+        this.transferManager = notNull( transferManager );
         this.vault = notBlank( vault );
         this.archiveId = notBlank( archiveId );
     }
 
+    @Override
     public File call() {
+        File temp = null;
         try {
             LOG.info( "Downloading archiveId \"" + archiveId + "\" from vault \"" + vault + "\"" );
-            File temp = File.createTempFile( "glacier-" + vault + '-' + archiveId, null );
-            ArchiveTransferManager atm = new ArchiveTransferManager( client, credentials );
-            atm.download( vault, archiveId, temp );
-            
+
+            temp = File.createTempFile( "glacier-" + vault + '-' + archiveId, null );
+
+            transferManager.download( vault, archiveId, temp );
+
             LOG.info( "Successfully downloaded archiveId \"" + archiveId + "\" from vault \"" + vault + "\"" );
             return temp;
         } catch ( Exception e ) {
-            String errorMessage = "Failed to download archiveId \"" + archiveId + "\" from vault \"" + vault + "\"";
-            LOG.error( errorMessage, e );
-            throw new RuntimeException( errorMessage, e );
+            if ( temp != null ) temp.delete();
+            throw new RuntimeException( "Failed to download archiveId \"" + archiveId + "\" from vault \"" + vault + "\"", e );
         }
     }
 

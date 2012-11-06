@@ -22,12 +22,12 @@ public class Upload implements Callable<Archive> {
 
     private static final Log LOG = LogFactory.getLog( Upload.class );
 
-    private final ArchiveTransferManager atm;
+    private final ArchiveTransferManager transferManager;
     private final String vault;
     private final File archive;
 
-    public Upload( ArchiveTransferManager atm, String vault, File archive ) {
-        this.atm = notNull( atm );
+    public Upload( ArchiveTransferManager transferManager, String vault, File archive ) {
+        this.transferManager = notNull( transferManager );
         this.vault = notBlank( vault );
         this.archive = validate( archive );
     }
@@ -35,7 +35,7 @@ public class Upload implements Callable<Archive> {
     @Override
     public Archive call() {
         try {
-            return upload( archive, vault, atm );
+            return upload( archive, vault, transferManager );
         } catch ( Exception e ) {
             throw new RuntimeException( "Failed to upload archive \"" + archive + "\" to vault \"" + vault + "\"", e );
         }
@@ -49,12 +49,12 @@ public class Upload implements Callable<Archive> {
         return upload;
     }
 
-    private static Archive upload( File upload, String vault, ArchiveTransferManager atm ) throws IOException {
+    private static Archive upload( File upload, String vault, ArchiveTransferManager transferManager ) throws IOException {
         String filename = upload.getName();
 
         LOG.info( "Uploading \"" + filename + "\" (" + byteCountToDisplaySize( upload.length() ) + ") to vault \"" + vault + "\"" );
 
-        UploadResult result = atm.upload( vault, filename, upload );
+        UploadResult result = transferManager.upload( vault, filename, upload );
 
         LOG.info( "Archive \"" + filename + "\" successfully uploaded to vault \"" + vault + "\"" );
 
