@@ -17,6 +17,10 @@ public class MockTestHelper {
         return context.mock( clazz );
     }
 
+    public final <T> T mock( Class<T> clazz, String name ) {
+        return context.mock( clazz, name );
+    }
+
     public final void expectThat( Expectations expectations ) {
         context.checking( expectations );
     }
