@@ -44,7 +44,7 @@ public class Glacier implements Closeable {
 
     private final ExecutorService workers;
     private final AmazonGlacierClient client;
-    private final AWSCredentials credentials;
+    private final ArchiveTransferManager transferManager;
     private final String region;
     private final Set<String> vaults;
 
@@ -53,15 +53,16 @@ public class Glacier implements Closeable {
     }
 
     public Glacier( ExecutorService workers, AWSCredentials credentials, String region ) {
-        this.workers = notNull( workers );
-        this.credentials = notNull( credentials );
-        this.region = notBlank( region );
+        notNull( credentials );
 
-        this.client = new AmazonGlacierClient( credentials );
-        this.client.setEndpoint( "https://glacier." + region + ".amazonaws.com/" );
+        this.workers = notNull( workers );
+        this.region = notBlank( region );
 
         LOG.info( "Using \"" + region + "\" region" );
 
+        this.client = new AmazonGlacierClient( credentials );
+        this.client.setEndpoint( "https://glacier." + region + ".amazonaws.com/" );
+        this.transferManager = new ArchiveTransferManager( client, credentials );
         this.vaults = ImmutableSet.copyOf( transform( new Vaults( client ).call(), VAULT_NAME ) );
 
         LOG.info( "Found " + vaults.size() + " vault(s) in \"" + region + "\" region" );
@@ -83,13 +84,11 @@ public class Glacier implements Closeable {
     public Future<Archive> upload( String vault, String archiveName, Callback<Archive> callback ) {
         checkVaultExists( vault );
         File archive = new File( archiveName );
-        ArchiveTransferManager transferManager = new ArchiveTransferManager( client, credentials );
         return workers.submit( After.create( new Upload( transferManager, vault, archive ), callback ) );
     }
 
     public Future<File> download( String vault, String archiveId ) {
         checkVaultExists( vault );
-        ArchiveTransferManager transferManager = new ArchiveTransferManager( client, credentials );
         return workers.submit( new Download( transferManager, vault, archiveId ) );
     }
 
