@@ -3,6 +3,7 @@ package org.csanchez.aws.glacier.actions;
 import static com.google.common.collect.Iterables.transform;
 import static org.csanchez.aws.glacier.utils.Check.notBlank;
 import static org.csanchez.aws.glacier.utils.Check.notNull;
+import static org.joda.time.Duration.standardMinutes;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +21,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.csanchez.aws.glacier.domain.Archive;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
 import org.joda.time.format.ISODateTimeFormat;
 
 import com.amazonaws.services.glacier.AmazonGlacierClient;
@@ -36,7 +38,7 @@ import com.google.common.collect.ImmutableSet;
 public class Inventory implements Callable<Collection<Archive>> {
 
     private static final Log LOG = LogFactory.getLog( Inventory.class );
-    private static final int INTERVAL = 30 * 60 * 1000;
+    private static final Duration INTERVAL = standardMinutes( 30 );
 
     private final AmazonGlacierClient client;
     private final String vault;
@@ -83,7 +85,7 @@ public class Inventory implements Callable<Collection<Archive>> {
             return client.getJobOutput( new GetJobOutputRequest( vault, jobId, null ) );
         }
 
-        Thread.sleep( INTERVAL );
+        Thread.sleep( INTERVAL.getMillis() );
         return pollForJobResponse( jobId );
     }
 
