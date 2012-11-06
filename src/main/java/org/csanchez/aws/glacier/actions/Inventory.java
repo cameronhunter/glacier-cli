@@ -4,8 +4,10 @@ import static com.google.common.collect.Iterables.transform;
 import static org.csanchez.aws.glacier.utils.Check.notBlank;
 import static org.csanchez.aws.glacier.utils.Check.notNull;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.io.IOUtils;
@@ -37,44 +39,44 @@ public class Inventory implements Callable<Collection<Archive>> {
     private static final int INTERVAL = 30 * 60 * 1000;
 
     private final AmazonGlacierClient client;
-    private final ObjectMapper mapper;
     private final String vault;
 
     public Inventory( AmazonGlacierClient client, String vault ) {
         this.client = notNull( client );
         this.vault = notBlank( vault );
-        this.mapper = new ObjectMapper();
     }
 
     @Override
     public Collection<Archive> call() {
-        InputStream in = null;
+        InputStream response = null;
         try {
             LOG.info( "Requesting inventory of vault \"" + vault + "\". This usually takes around 4 hours." );
 
             InitiateJobResult jobRequest = client.initiateJob( new InitiateJobRequest( vault, new JobParameters( "JSON", "inventory-retrieval", null, null ) ) );
 
-            GetJobOutputResult result = pollJobForResult( jobRequest.getJobId() );
+            response = pollForJobResponse( jobRequest.getJobId() ).getBody();
 
             LOG.info( "Successfully retrieved inventory of vault \"" + vault + "\"" );
 
-            in = result.getBody();
-
-            JsonFactory factory = mapper.getJsonFactory();
-            JsonNode node = factory.createJsonParser( in ).readValueAsTree();
-
-            Validate.isTrue( node.isObject() );
-
-            return ImmutableSet.copyOf( transform( node.path( "ArchiveList" ), TO_ARCHIVE ) );
+            return parseJsonResponse( response );
         } catch ( Exception e ) {
             throw new RuntimeException( "Failed to retrieve inventory of vault \"" + vault + "\"", e );
         } finally {
-            IOUtils.closeQuietly( in );
+            IOUtils.closeQuietly( response );
         }
     }
 
-    private GetJobOutputResult pollJobForResult( String jobId ) throws InterruptedException {
+    static Set<Archive> parseJsonResponse( InputStream response ) throws IOException {
+        JsonFactory factory = new ObjectMapper().getJsonFactory();
+        JsonNode node = factory.createJsonParser( response ).readValueAsTree();
 
+        Validate.isTrue( node.isObject() );
+        JsonNode archiveList = node.get( "ArchiveList" );
+
+        return ImmutableSet.copyOf( transform( archiveList, TO_ARCHIVE ) );
+    }
+
+    private GetJobOutputResult pollForJobResponse( String jobId ) throws InterruptedException {
         DescribeJobResult describeJob = client.describeJob( new DescribeJobRequest( vault, jobId ) );
 
         if ( describeJob.isCompleted() ) {
@@ -82,7 +84,7 @@ public class Inventory implements Callable<Collection<Archive>> {
         }
 
         Thread.sleep( INTERVAL );
-        return pollJobForResult( jobId );
+        return pollForJobResponse( jobId );
     }
 
     private static final Function<JsonNode, Archive> TO_ARCHIVE = new Function<JsonNode, Archive>() {
