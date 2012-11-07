@@ -1,6 +1,6 @@
 # Glacier CLI [![Build Status](https://secure.travis-ci.org/cameronhunter/glacier-cli.png)](http://travis-ci.org/cameronhunter/glacier-cli)
 
-A command line client to [Amazon Glacier](http://aws.amazon.com/glacier).
+A command line client to [Amazon Glacier](http://aws.amazon.com/glacier). More info at the [AWS Glacier development docs](http://docs.amazonwebservices.com/amazonglacier/latest/dev/).
 
 ## Configuration
 
@@ -13,19 +13,19 @@ accessKey=…
 
 ## Examples
 
-Upload file1 and file2 to vault `pictures`
+Upload `file1.zip` and `file2.zip` to vault `pictures`
 
 ```bash
-glacier-upload pictures file1 file2
+glacier-upload pictures file1.zip file2.zip
 ```
 
-Download archive with id xxx from vault `pictures` to file `pic.tar` (takes >4 hours)
+Download archive with id `xxx` from vault `pictures` to file `pic.tar` (takes >4 hours)
 
 ```bash
 glacier-download pictures xxx pic.tar
 ```
 
-Delete archive with id xxx from vault `pictures`
+Delete archive with id `xxx` from vault `pictures`
 
 ```bash
 glacier-delete pictures xxx
@@ -37,13 +37,13 @@ Get the inventory for vault `pictures` (takes >4 hours)
 glacier-inventory pictures
 ```
 
-Upload file1 and file2 to vault `pictures` in Europe region
+Upload `file1.zip` and `file2.zip` to vault `pictures` in European region
 
 ```bash
 glacier-upload -region eu-west-1 pictures file1 file2
 ```
 
-List vaults in Europe region
+List vaults in European region
 
 ```bash
 glacier-vaults -region eu-west-1
@@ -57,13 +57,9 @@ glacier-vaults -region eu-west-1
 
 ## Building
 
-`mvn clean package`
-
-## More info
-
-Uses Glacier high level API for uploading, downloading, deleting files, and the low-level one for retrieving vault inventory.
-
-More info at the [AWS Glacier development docs](http://docs.amazonwebservices.com/amazonglacier/latest/dev/).
+```bash
+mvn clean package
+```
 
 License
 -------
