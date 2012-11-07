@@ -45,20 +45,6 @@ public abstract class AbstractGlacierCli implements Runnable {
         }
     }
 
-    private static AWSCredentials getCredentials() throws IOException {
-        String accessKey = System.getProperty( "AWS_ACCESS_KEY_ID", null );
-        String secretKey = System.getProperty( "AWS_SECRET_ACCESS_KEY", null );
-
-        if ( isNotBlank( accessKey ) && isNotBlank( secretKey ) ) {
-            return new BasicAWSCredentials( accessKey, secretKey );
-        }
-
-        File properties = new File( System.getProperty( "user.home" ), "AwsCredentials.properties" );
-        Validate.isTrue( properties.exists(), "Missing " + properties.getAbsolutePath() );
-
-        return new PropertiesCredentials( properties );
-    }
-
     public AbstractGlacierCli( Glacier glacier, List<String> parameters ) {
         this.glacier = notNull( glacier );
         this.parameters = notNull( parameters );
@@ -104,6 +90,20 @@ public abstract class AbstractGlacierCli implements Runnable {
         options.addOption( region );
 
         return options;
+    }
+
+    private static AWSCredentials getCredentials() throws IOException {
+        String accessKey = System.getProperty( "AWS_ACCESS_KEY_ID", null );
+        String secretKey = System.getProperty( "AWS_SECRET_ACCESS_KEY", null );
+
+        if ( isNotBlank( accessKey ) && isNotBlank( secretKey ) ) {
+            return new BasicAWSCredentials( accessKey, secretKey );
+        }
+
+        File properties = new File( System.getProperty( "user.home" ), "AwsCredentials.properties" );
+        Validate.isTrue( properties.exists(), "Missing " + properties.getAbsolutePath() );
+
+        return new PropertiesCredentials( properties );
     }
 
     protected <T> void output( Future<Collection<T>> future, String empty ) throws Exception {
