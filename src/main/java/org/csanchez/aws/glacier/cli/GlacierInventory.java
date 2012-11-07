@@ -3,9 +3,11 @@ package org.csanchez.aws.glacier.cli;
 import static org.apache.commons.lang.Validate.isTrue;
 import static org.csanchez.aws.glacier.utils.Check.notBlank;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.csanchez.aws.glacier.Glacier;
+import org.csanchez.aws.glacier.domain.Archive;
 
 public class GlacierInventory extends AbstractGlacierCli {
 
@@ -31,7 +33,14 @@ public class GlacierInventory extends AbstractGlacierCli {
     protected void execute( Glacier glacier, List<String> parameters ) throws Exception {
         String vault = parameters.get( 0 );
 
-        output( glacier.inventory( vault ), "There are no archives in vault \"" + vault + "\"" );
+        Collection<Archive> archives = glacier.inventory( vault ).get();
+        for ( Archive archive : archives ) {
+            System.out.println( archive );
+        }
+
+        if ( archives.isEmpty() ) {
+            LOG.info( "There are no archives in vault \"" + vault + "\"" );
+        }
     }
 
 }

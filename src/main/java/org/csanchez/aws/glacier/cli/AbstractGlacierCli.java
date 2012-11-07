@@ -6,9 +6,7 @@ import static org.csanchez.aws.glacier.utils.Check.notNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.Future;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
@@ -113,17 +111,4 @@ public abstract class AbstractGlacierCli implements Runnable {
 
         return new PropertiesCredentials( credentials );
     }
-
-    protected <T> void output( Future<Collection<T>> future, String empty ) throws Exception {
-        Collection<T> collection = future.get();
-        if ( collection == null || collection.isEmpty() ) {
-            LOG.info( empty );
-            return;
-        }
-
-        for ( T item : collection ) {
-            System.out.println( item );
-        }
-    }
-
 }
