@@ -64,9 +64,10 @@ public class Glacier implements Closeable {
         this.client = new AmazonGlacierClient( credentials );
         this.client.setEndpoint( "https://glacier." + region + ".amazonaws.com/" );
         this.transferManager = new ArchiveTransferManager( client, credentials );
-        this.vaults = ImmutableSet.copyOf( transform( new Vaults( client ).call(), VAULT_NAME ) );
 
-        LOG.info( "Found " + vaults.size() + " vault(s) in \"" + region + "\" region" );
+        LOG.info( "Retrieving vault names in \"" + region + "\" region" );
+
+        this.vaults = ImmutableSet.copyOf( transform( new Vaults( client ).call(), VAULT_NAME ) );
     }
 
     public Future<Collection<Vault>> vaults() {

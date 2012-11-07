@@ -9,8 +9,6 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.csanchez.aws.glacier.domain.Vault;
 import org.csanchez.aws.glacier.utils.Check;
 import org.joda.time.DateTime;
@@ -25,8 +23,6 @@ import com.google.common.collect.ImmutableSet;
 
 public class Vaults implements Callable<Collection<Vault>> {
 
-    private static final Log LOG = LogFactory.getLog( Vaults.class );
-
     private final AmazonGlacierClient client;
 
     public Vaults( AmazonGlacierClient client ) {
@@ -36,7 +32,6 @@ public class Vaults implements Callable<Collection<Vault>> {
     @Override
     public Collection<Vault> call() {
         try {
-            LOG.info( "Retrieving vault list" );
             return listVaults( client, new ListVaultsRequest( "-" ) );
         } catch ( Exception e ) {
             throw new RuntimeException( "Couldn't retrieve vault list", e );
