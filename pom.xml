@@ -9,6 +9,7 @@
     <cli>org.csanchez.aws.glacier.cli</cli>
     <mainClass>${cli}.GlacierAll</mainClass>
     <cliExecutables>${project.build.directory}/glacier-cli</cliExecutables>
+    <releaseDir>${basedir}/release</releaseDir>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -155,6 +156,25 @@
           </execution>
         </executions>
       </plugin>
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.4.1</version>
+          <configuration>
+          <filesets>
+            <fileset>
+              <directory>${releaseDir}</directory>
+              <includes>
+                  <include>${artifactId}-*-release.*</include>
+              </includes>
+              <excludes>
+                  <exclude>${artifactId}-${version}-release.*</exclude>
+              </excludes>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
 
       <plugin>
       	<groupId>org.apache.maven.plugins</groupId>
@@ -168,7 +188,7 @@
               <goal>copy-resources</goal>
             </goals>
       	    <configuration>
-      	      <outputDirectory>${basedir}/release</outputDirectory>
+      	      <outputDirectory>${releaseDir}</outputDirectory>
               <resources>
                 <resource>
                   <directory>${project.build.directory}</directory>
