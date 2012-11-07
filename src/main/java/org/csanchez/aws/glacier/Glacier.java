@@ -42,10 +42,11 @@ public class Glacier implements Closeable {
 
     private static final Log LOG = LogFactory.getLog( Glacier.class );
 
+    public final String region;
+
     private final ExecutorService workers;
     private final AmazonGlacierClient client;
     private final ArchiveTransferManager transferManager;
-    private final String region;
     private final Set<String> vaults;
 
     public Glacier( AWSCredentials credentials, String region ) {
