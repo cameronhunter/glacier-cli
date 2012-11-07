@@ -82,17 +82,9 @@ public abstract class AbstractGlacierCli implements Runnable {
     @SuppressWarnings( "static-access" )
     private static Options commonOptions() {
         Options options = new Options();
+
         Option region = OptionBuilder.withArgName( "region" ).hasArg().withDescription( "Specify URL as the web service URL to use. Defaults to 'us-east-1'" ).create( "region" );
         options.addOption( region );
-
-        Option topic = OptionBuilder.withArgName( "topic_name" ).hasArg().withDescription( "SNS topic to use for inventory retrieval. Defaults to 'glacier'" ).create( "topic" );
-        options.addOption( topic );
-
-        Option queue = OptionBuilder.withArgName( "queue_name" ).hasArg().withDescription( "SQS queue to use for inventory retrieval. Defaults to 'glacier'" ).create( "queue" );
-        options.addOption( queue );
-
-        Option output = OptionBuilder.withArgName( "file_name" ).hasArg().withDescription( "File to save the inventory to. Defaults to 'glacier.json'" ).create( "output" );
-        options.addOption( output );
 
         return options;
     }

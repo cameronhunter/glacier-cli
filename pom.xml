@@ -8,6 +8,7 @@
   <properties>
     <cli>org.csanchez.aws.glacier.cli</cli>
     <mainClass>${cli}.GlacierAll</mainClass>
+    <cliExecutables>${project.build.directory}/glacier-cli</cliExecutables>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -144,6 +145,7 @@
           </execution>
         </executions>
         <configuration>
+          <assembleDirectory>${cliExecutables}</assembleDirectory>
           <programs>
             <program>
               <mainClass>${cli}.GlacierAll</mainClass>
