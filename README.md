@@ -29,28 +29,45 @@ accessKey=…
 
 Upload file1 and file2 to vault `pictures`
 
-`java -jar glacier-1.0-jar-with-dependencies.jar upload pictures file1 file2`
+```bash
+glacier upload pictures file1 file2
+glacier-upload pictures file1 file2
+```
 
 Download archive with id xxx from vault `pictures` to file `pic.tar` (takes >4 hours)
 
-`java -jar glacier-1.0-jar-with-dependencies.jar download pictures xxx pic.tar`
+```bash
+glacier download pictures xxx pic.tar
+glacier-download pictures xxx pic.tar
+```
 
 Delete archive with id xxx from vault `pictures`
 
-`java -jar glacier-1.0-jar-with-dependencies.jar delete pictures xxx`
+```bash
+glacier delete pictures xxx
+glacier-delete pictures xxx
+```
 
 Get the inventory for vault `pictures` (takes >4 hours)
 
-`java -jar glacier-1.0-jar-with-dependencies.jar inventory pictures`
+```bash
+glacier inventory pictures
+glacier-inventory pictures
+```
 
 Upload file1 and file2 to vault `pictures` in Europe region
 
-`java -jar glacier-1.0-jar-with-dependencies.jar -region eu-west-1 upload pictures file1 file2`
+```bash
+glacier -region eu-west-1 upload pictures file1 file2
+glacier-upload -region eu-west-1 pictures file1 file2
+```
 
 List vaults in Europe region
 
-`java -jar glacier-1.0-jar-with-dependencies.jar -region eu-west-1 vaults`
-
+```bash
+glacier -region eu-west-1 vaults
+glacier-vaults -region eu-west-1
+```
 
 ## Building
 
@@ -65,8 +82,6 @@ More info at the [AWS Glacier development docs](http://docs.amazonwebservices.co
 License
 -------
 ```
-	Copyright 2012 Carlos Sanchez
-
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
 	You may obtain a copy of the License at
