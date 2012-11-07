@@ -2,7 +2,7 @@
  
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.csanchez.aws</groupId>
-  <artifactId>glacier</artifactId>
+  <artifactId>glacier-cli</artifactId>
   <version>3.0.0</version>
 
   <properties>
@@ -94,44 +94,6 @@
     <plugins>
         
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <archive>
-            <manifest>
-              <mainClass>${mainClass}</mainClass>
-            </manifest>
-          </archive>
-        </configuration>
-      </plugin>
-      
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.3</version>
-        <executions>
-          <execution>
-            <id>make-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <descriptorRefs>
-                <descriptorRef>jar-with-dependencies</descriptorRef>
-              </descriptorRefs>
-              <archive>
-                <manifest>
-                  <mainClass>${mainClass}</mainClass>
-                </manifest>
-              </archive>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      
-      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>appassembler-maven-plugin</artifactId>
         <version>1.3</version>
@@ -172,6 +134,52 @@
             </program>
           </programs>
         </configuration>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.3</version>
+        <executions>
+          <execution>
+            <id>make-release</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>${basedir}/src/main/assembly/release.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+      	<artifactId>maven-resources-plugin</artifactId>
+      	<version>2.5</version>
+      	<executions>
+      	  <execution>
+      	    <id>move-to-release-dir</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+      	    <configuration>
+      	      <outputDirectory>${basedir}/release</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}</directory>
+                  <includes>
+                    <include>glacier-*-release.*</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+      	  </execution>
+      	</executions>
       </plugin>
       
     </plugins>

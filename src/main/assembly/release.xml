@@ -1,0 +1,17 @@
+<assembly>
+  
+  <id>release</id>
+  
+  <formats>
+    <format>tar.gz</format>
+    <format>zip</format>
+  </formats>
+  
+  <fileSets>
+    <fileSet>
+      <directory>${cliExecutables}</directory>
+      <outputDirectory>/</outputDirectory>
+    </fileSet>
+  </fileSets>
+  
+</assembly>
