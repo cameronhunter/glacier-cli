@@ -4,7 +4,7 @@ A command line client to [Amazon Glacier](http://aws.amazon.com/glacier). More i
 
 ## Configuration
 
-Create `$HOME/AwsCredentials.properties` with your AWS keys
+Provide your AWS credentials by setting `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` environment variables or by creating `$HOME/AwsCredentials.properties` with your AWS keys
 
 ```
 secretKey=…
