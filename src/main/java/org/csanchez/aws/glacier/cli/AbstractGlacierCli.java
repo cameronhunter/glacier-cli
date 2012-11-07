@@ -28,7 +28,10 @@ import com.amazonaws.auth.PropertiesCredentials;
 
 public abstract class AbstractGlacierCli implements Runnable {
 
-    protected final Log log = LogFactory.getLog( getClass() );
+    private static final String DEFAULT_REGION = "us-east-1";
+    private static final File DEFAULT_CREDENTIAL_FILE = new File( System.getProperty( "user.home" ), "AwsCredentials.properties" );
+
+    protected static final Log LOG = LogFactory.getLog( AbstractGlacierCli.class );
 
     private final Glacier glacier;
     private final List<String> parameters;
@@ -36,10 +39,12 @@ public abstract class AbstractGlacierCli implements Runnable {
     public AbstractGlacierCli( String... parameters ) {
         try {
             CommandLine cmd = new PosixParser().parse( commonOptions(), parameters );
-            String region = cmd.getOptionValue( "region", "us-east-1" );
+
+            String region = cmd.getOptionValue( "region", DEFAULT_REGION );
+            String credentials = cmd.getOptionValue( "credentials", DEFAULT_CREDENTIAL_FILE.getAbsolutePath() );
 
             this.parameters = newArrayList( notNull( cmd.getArgs() ) );
-            this.glacier = new Glacier( getCredentials(), region );
+            this.glacier = new Glacier( getCredentials( credentials ), region );
         } catch ( Exception e ) {
             throw new RuntimeException( e );
         }
@@ -66,7 +71,7 @@ public abstract class AbstractGlacierCli implements Runnable {
         try {
             execute( glacier, parameters );
         } catch ( Throwable t ) {
-            log.error( t.getMessage(), t );
+            LOG.error( t.getMessage(), t );
         } finally {
             IOUtils.closeQuietly( glacier );
         }
@@ -75,11 +80,11 @@ public abstract class AbstractGlacierCli implements Runnable {
     private static void printHelp( Options options ) {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp( "glacier " + //
-                             "upload vault_name file1 file2 ... | " + //
-                             "download vault_name archiveId output_file | " + //
-                             "delete vault_name archiveId | " + //
-                             "inventory vault_name | " + //
-                             "vaults | ", options );
+                "upload vault_name file1 file2 ... | " + //
+                "download vault_name archiveId output_file | " + //
+                "delete vault_name archiveId | " + //
+                "inventory vault_name | " + //
+                "vaults | ", options );
     }
 
     @SuppressWarnings( "static-access" )
@@ -92,24 +97,27 @@ public abstract class AbstractGlacierCli implements Runnable {
         return options;
     }
 
-    private static AWSCredentials getCredentials() throws IOException {
+    private static AWSCredentials getCredentials( String properties ) throws IOException {
         String accessKey = System.getProperty( "AWS_ACCESS_KEY_ID", null );
         String secretKey = System.getProperty( "AWS_SECRET_ACCESS_KEY", null );
 
         if ( isNotBlank( accessKey ) && isNotBlank( secretKey ) ) {
+            LOG.info( "Using AWS credentials from environment variables" );
             return new BasicAWSCredentials( accessKey, secretKey );
         }
 
-        File properties = new File( System.getProperty( "user.home" ), "AwsCredentials.properties" );
-        Validate.isTrue( properties.exists(), "Missing " + properties.getAbsolutePath() );
+        File credentials = new File( properties );
+        Validate.isTrue( credentials.exists(), "AWS credentials not found. See https://github.com/cameronhunter/glacier-cli#configuration for how to get setup." );
 
-        return new PropertiesCredentials( properties );
+        LOG.info( "Using AWS credentials from \"" + credentials.getAbsolutePath() + "\"" );
+
+        return new PropertiesCredentials( credentials );
     }
 
     protected <T> void output( Future<Collection<T>> future, String empty ) throws Exception {
         Collection<T> collection = future.get();
         if ( collection == null || collection.isEmpty() ) {
-            log.info( empty );
+            LOG.info( empty );
             return;
         }
 

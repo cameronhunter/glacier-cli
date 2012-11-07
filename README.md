@@ -53,6 +53,7 @@ glacier-vaults -region eu-west-1
 
 ```
 -region	<region>	Specify URL as the web service URL to use. Defaults to 'us-east-1'
+-credentials	<file>	Specify a properties file containing your AWS credentials. Defaults to '$HOME/AwsCredentials.properties'
 ```
 
 ## Building

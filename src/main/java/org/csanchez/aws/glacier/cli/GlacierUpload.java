@@ -34,7 +34,7 @@ public class GlacierUpload extends AbstractGlacierCli {
         String vault = parameters.get( 0 );
         List<String> uploads = parameters.subList( 1, parameters.size() );
 
-        log.info( uploads.size() + " archive(s) requested for upload." );
+        LOG.info( uploads.size() + " archive(s) requested for upload." );
 
         for ( String archive : uploads ) {
             glacier.upload( vault, archive, OUTPUT_ARCHIVE );

@@ -32,7 +32,7 @@ public class GlacierDelete extends AbstractGlacierCli {
         String vault = parameters.get( 0 );
         List<String> deletes = parameters.subList( 1, parameters.size() );
 
-        log.info( deletes.size() + " archive(s) requested for deletion." );
+        LOG.info( deletes.size() + " archive(s) requested for deletion." );
 
         for ( String archive : deletes ) {
             glacier.delete( vault, archive );

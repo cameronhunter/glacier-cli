@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.csanchez.aws</groupId>
   <artifactId>glacier-cli</artifactId>
-  <version>3.0.0</version>
+  <version>3.1.0</version>
 
   <properties>
     <cli>org.csanchez.aws.glacier.cli</cli>
