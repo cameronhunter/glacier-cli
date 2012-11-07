@@ -1,9 +1,11 @@
 package org.csanchez.aws.glacier.cli;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.csanchez.aws.glacier.utils.Check.notNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -20,6 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.csanchez.aws.glacier.Glacier;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.PropertiesCredentials;
 
 public abstract class AbstractGlacierCli implements Runnable {
@@ -31,17 +35,28 @@ public abstract class AbstractGlacierCli implements Runnable {
 
     public AbstractGlacierCli( String... parameters ) {
         try {
-            File properties = new File( System.getProperty( "user.home" ) + "/AwsCredentials.properties" );
-            Validate.isTrue( properties.exists(), "Missing " + properties.getAbsolutePath() );
-
             CommandLine cmd = new PosixParser().parse( commonOptions(), parameters );
             String region = cmd.getOptionValue( "region", "us-east-1" );
 
             this.parameters = newArrayList( notNull( cmd.getArgs() ) );
-            this.glacier = new Glacier( new PropertiesCredentials( properties ), region );
+            this.glacier = new Glacier( getCredentials(), region );
         } catch ( Exception e ) {
             throw new RuntimeException( e );
         }
+    }
+
+    private static AWSCredentials getCredentials() throws IOException {
+        String accessKey = System.getProperty( "AWS_ACCESS_KEY_ID", null );
+        String secretKey = System.getProperty( "AWS_SECRET_ACCESS_KEY", null );
+
+        if ( isNotBlank( accessKey ) && isNotBlank( secretKey ) ) {
+            return new BasicAWSCredentials( accessKey, secretKey );
+        }
+
+        File properties = new File( System.getProperty( "user.home" ), "AwsCredentials.properties" );
+        Validate.isTrue( properties.exists(), "Missing " + properties.getAbsolutePath() );
+
+        return new PropertiesCredentials( properties );
     }
 
     public AbstractGlacierCli( Glacier glacier, List<String> parameters ) {
@@ -73,7 +88,12 @@ public abstract class AbstractGlacierCli implements Runnable {
 
     private static void printHelp( Options options ) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp( "glacier " + "upload vault_name file1 file2 ... | " + "download vault_name archiveId output_file | " + "delete vault_name archiveId | " + "inventory vault_name | ", options );
+        formatter.printHelp( "glacier " + //
+                             "upload vault_name file1 file2 ... | " + //
+                             "download vault_name archiveId output_file | " + //
+                             "delete vault_name archiveId | " + //
+                             "inventory vault_name | " + //
+                             "vaults | ", options );
     }
 
     @SuppressWarnings( "static-access" )
