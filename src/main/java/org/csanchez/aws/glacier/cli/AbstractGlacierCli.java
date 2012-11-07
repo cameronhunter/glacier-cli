@@ -92,6 +92,9 @@ public abstract class AbstractGlacierCli implements Runnable {
         Option region = OptionBuilder.withArgName( "region" ).hasArg().withDescription( "Specify URL as the web service URL to use. Defaults to 'us-east-1'" ).create( "region" );
         options.addOption( region );
 
+        Option credentials = OptionBuilder.withArgName( "credentials" ).hasArg().withDescription( "Defaults to '$HOME/AwsCredentials.properties'" ).create( "credentials" );
+        options.addOption( credentials );
+
         return options;
     }
 
