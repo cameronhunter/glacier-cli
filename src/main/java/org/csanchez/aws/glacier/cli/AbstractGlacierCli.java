@@ -20,7 +20,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.csanchez.aws.glacier.Glacier;
 
-import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.PropertiesCredentials;
 
 public abstract class AbstractGlacierCli implements Runnable {
@@ -35,13 +34,11 @@ public abstract class AbstractGlacierCli implements Runnable {
             File properties = new File( System.getProperty( "user.home" ) + "/AwsCredentials.properties" );
             Validate.isTrue( properties.exists(), "Missing " + properties.getAbsolutePath() );
 
-            AWSCredentials credentials = new PropertiesCredentials( properties );
-
             CommandLine cmd = new PosixParser().parse( commonOptions(), parameters );
             String region = cmd.getOptionValue( "region", "us-east-1" );
 
             this.parameters = newArrayList( notNull( cmd.getArgs() ) );
-            this.glacier = new Glacier( credentials, region );
+            this.glacier = new Glacier( new PropertiesCredentials( properties ), region );
         } catch ( Exception e ) {
             throw new RuntimeException( e );
         }

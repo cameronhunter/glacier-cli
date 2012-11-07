@@ -137,7 +137,6 @@
         <version>1.3</version>
         <executions>
           <execution>
-            <id>make-executables</id>
             <phase>package</phase>
             <goals>
               <goal>assemble</goal>
