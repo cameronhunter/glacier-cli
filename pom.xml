@@ -143,6 +143,23 @@
         <version>2.3</version>
         <executions>
           <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+              <archive>
+                <manifest>
+                  <mainClass>${mainClass}</mainClass>
+                </manifest>
+              </archive>
+            </configuration>
+          </execution>
+          <execution>
             <id>make-release</id>
             <phase>package</phase>
             <goals>
@@ -167,9 +184,11 @@
               <directory>${releaseDir}</directory>
               <includes>
                   <include>${project.artifactId}-*-release.*</include>
+                  <include>${project.artifactId}-*-jar-with-dependencies.*</include>
               </includes>
               <excludes>
                   <exclude>${project.artifactId}-${project.version}-release.*</exclude>
+                  <exclude>${project.artifactId}-${project.version}-jar-with-dependencies.*</exclude>
               </excludes>
             </fileset>
           </filesets>
