@@ -37,7 +37,8 @@ public class Upload implements Callable<Archive> {
         try {
             return upload( archive, vault, transferManager );
         } catch ( Exception e ) {
-            throw new RuntimeException( "Failed to upload archive \"" + archive + "\" to vault \"" + vault + "\"", e );
+            LOG.error( "Failed to upload archive \"" + archive + "\" to vault \"" + vault + "\"", e );
+            throw new RuntimeException( e );
         }
     }
 

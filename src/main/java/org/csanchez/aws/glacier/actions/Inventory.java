@@ -62,7 +62,8 @@ public class Inventory implements Callable<Collection<Archive>> {
 
             return parseJsonResponse( response );
         } catch ( Exception e ) {
-            throw new RuntimeException( "Failed to retrieve inventory of vault \"" + vault + "\"", e );
+            LOG.error( "Failed to retrieve inventory of vault \"" + vault + "\"", e );
+            throw new RuntimeException( e );
         } finally {
             IOUtils.closeQuietly( response );
         }
