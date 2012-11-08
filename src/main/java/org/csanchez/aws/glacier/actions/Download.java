@@ -4,6 +4,7 @@ import static org.csanchez.aws.glacier.utils.Check.notBlank;
 import static org.csanchez.aws.glacier.utils.Check.notNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
@@ -27,18 +28,25 @@ public class Download implements Callable<File> {
 
     @Override
     public File call() {
-        File temp = null;
+        try {
+            return downloadTo( File.createTempFile( "glacier-" + vault + '-' + archiveId, null ) );
+        } catch ( IOException e ) {
+            LOG.error( "Couldn't create temp file", e );
+            throw new RuntimeException( e );
+        }
+    }
+
+    File downloadTo( File file ) {
         try {
             LOG.info( "Downloading archiveId \"" + archiveId + "\" from vault \"" + vault + "\"" );
 
-            temp = File.createTempFile( "glacier-" + vault + '-' + archiveId, null );
-
-            transferManager.download( vault, archiveId, temp );
+            transferManager.download( vault, archiveId, file );
 
             LOG.info( "Successfully downloaded archiveId \"" + archiveId + "\" from vault \"" + vault + "\"" );
-            return temp;
+            return file;
         } catch ( Exception e ) {
-            if ( temp != null ) temp.delete();
+            if ( file != null ) file.delete();
+
             LOG.error( "Failed to download archiveId \"" + archiveId + "\" from vault \"" + vault + "\"", e );
             throw new RuntimeException( e );
         }
