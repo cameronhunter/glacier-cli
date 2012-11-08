@@ -1,6 +1,10 @@
 # Glacier CLI [![Build Status](https://secure.travis-ci.org/cameronhunter/glacier-cli.png)](http://travis-ci.org/cameronhunter/glacier-cli)
 
-A command line client to [Amazon Glacier](http://aws.amazon.com/glacier). More info at the [AWS Glacier development docs](http://docs.amazonwebservices.com/amazonglacier/latest/dev/).
+A command line client to [Amazon Glacier](http://aws.amazon.com/glacier). An extremely low-cost storage service that provides secure and durable storage for data archiving and backup.
+
+## Getting Started
+
+Download a [release](https://github.com/cameronhunter/glacier-cli/tree/master/release), extract the files and add the `bin` directory to your `PATH`. If you want to build the project yourself you can run `mvn clean package`.
 
 ## Configuration
 
@@ -11,7 +15,7 @@ secretKey=…
 accessKey=…
 ```
 
-## Examples
+## Usage
 
 Upload `file1.zip` and `file2.zip` to vault `pictures`
 
@@ -54,12 +58,6 @@ glacier-vaults -region eu-west-1
 ```
 -region      <region>  Defaults to 'us-east-1'
 -credentials <file>    Defaults to '$HOME/AwsCredentials.properties'
-```
-
-## Building
-
-```bash
-mvn clean package
 ```
 
 License
