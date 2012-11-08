@@ -1,6 +1,6 @@
 package org.csanchez.aws.glacier.utils;
 
-import org.apache.commons.lang.StringUtils;
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 public final class Check {
 
@@ -18,7 +18,7 @@ public final class Check {
     }
 
     public static String notBlank( String input, String message ) {
-        if ( StringUtils.isBlank( input ) ) throw new IllegalArgumentException( message );
+        if ( isBlank( input ) ) throw new IllegalArgumentException( message );
         return input;
     }
 
