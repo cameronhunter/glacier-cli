@@ -10,6 +10,8 @@
   <fileSets>
     <fileSet>
       <directory>${cliExecutables}</directory>
+      <directoryMode>0755</directoryMode>
+      <fileMode>0755</fileMode>
       <outputDirectory>/</outputDirectory>
     </fileSet>
   </fileSets>
