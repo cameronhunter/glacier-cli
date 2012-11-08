@@ -8,7 +8,7 @@
   <properties>
     <cli>org.csanchez.aws.glacier.cli</cli>
     <mainClass>${cli}.GlacierAll</mainClass>
-    <cliExecutables>${project.build.directory}/glacier-cli</cliExecutables>
+    <cliExecutables>${project.build.directory}/${project.artifactId}</cliExecutables>
     <releaseDir>${basedir}/release</releaseDir>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -169,6 +169,7 @@
               <descriptors>
                 <descriptor>${basedir}/src/main/assembly/release.xml</descriptor>
               </descriptors>
+              <appendAssemblyId>false</appendAssemblyId>
             </configuration>
           </execution>
         </executions>
@@ -178,17 +179,15 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
         <version>2.4.1</version>
-          <configuration>
+        <configuration>
           <filesets>
             <fileset>
               <directory>${releaseDir}</directory>
               <includes>
-                  <include>${project.artifactId}-*-release.*</include>
-                  <include>${project.artifactId}-*-jar-with-dependencies.*</include>
+                <include>${project.artifactId}-*.*</include>
               </includes>
               <excludes>
-                  <exclude>${project.artifactId}-${project.version}-release.*</exclude>
-                  <exclude>${project.artifactId}-${project.version}-jar-with-dependencies.*</exclude>
+                <exclude>${project.artifactId}-${project.version}.*</exclude>
               </excludes>
             </fileset>
           </filesets>
@@ -212,8 +211,11 @@
                 <resource>
                   <directory>${project.build.directory}</directory>
                   <includes>
-                    <include>glacier-*-release.*</include>
+                    <include>${project.artifactId}-${project.version}.*</include>
                   </includes>
+                  <excludes>
+                    <exclude>*.jar</exclude>
+                  </excludes>
                 </resource>
               </resources>
             </configuration>
