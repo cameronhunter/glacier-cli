@@ -1,6 +1,6 @@
 package org.csanchez.aws.glacier.actions;
 
-import org.csanchez.aws.glacier.utils.MockTestHelper;
+import org.csanchez.aws.glacier.test.utils.MockTestHelper;
 import org.jmock.Expectations;
 import org.junit.Before;
 import org.junit.Test;

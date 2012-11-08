@@ -1,4 +1,4 @@
-package org.csanchez.aws.glacier.utils;
+package org.csanchez.aws.glacier.test.utils;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;

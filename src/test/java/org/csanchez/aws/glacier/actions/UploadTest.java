@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import org.csanchez.aws.glacier.domain.Archive;
-import org.csanchez.aws.glacier.utils.MockTestHelper;
+import org.csanchez.aws.glacier.test.utils.MockTestHelper;
 import org.jmock.Expectations;
 import org.junit.Before;
 import org.junit.Test;

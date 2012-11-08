@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.csanchez.aws.glacier.domain.Archive;
-import org.csanchez.aws.glacier.utils.MockTestHelper;
+import org.csanchez.aws.glacier.test.utils.MockTestHelper;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Test;
 

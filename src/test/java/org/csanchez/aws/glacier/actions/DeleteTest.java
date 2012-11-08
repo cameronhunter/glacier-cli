@@ -4,7 +4,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import org.csanchez.aws.glacier.utils.MockTestHelper;
+import org.csanchez.aws.glacier.test.utils.MockTestHelper;
 import org.jmock.Expectations;
 import org.junit.Before;
 import org.junit.Test;
