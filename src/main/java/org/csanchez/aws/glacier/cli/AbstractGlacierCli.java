@@ -35,16 +35,21 @@ public abstract class AbstractGlacierCli implements Runnable {
     private final List<String> parameters;
 
     public AbstractGlacierCli( String... parameters ) {
+        Glacier glacier = null;
         try {
             CommandLine cmd = new PosixParser().parse( commonOptions(), parameters );
 
             String region = cmd.getOptionValue( "region", DEFAULT_REGION );
             String credentials = cmd.getOptionValue( "credentials", DEFAULT_CREDENTIAL_FILE.getAbsolutePath() );
 
+            glacier = new Glacier( getCredentials( credentials ), region );
+
             this.parameters = newArrayList( notNull( cmd.getArgs() ) );
-            this.glacier = new Glacier( getCredentials( credentials ), region );
+            this.glacier = glacier;
         } catch ( Exception e ) {
             throw new RuntimeException( e );
+        } finally {
+            IOUtils.closeQuietly( glacier );
         }
     }
 
