@@ -65,18 +65,25 @@ public abstract class AbstractGlacierCli implements Runnable {
     @Override
     public void run() {
         try {
-            validate( parameters );
-        } catch ( IllegalArgumentException ignore ) {
-            printHelp( commonOptions() );
-            return;
-        }
-
-        try {
-            execute( glacier, parameters );
+            if ( hasValidParameters( parameters ) ) {
+                execute( glacier, parameters );
+            } else {
+                printHelp( commonOptions() );
+            }
         } catch ( Throwable t ) {
             LOG.error( t.getMessage(), t );
         } finally {
             IOUtils.closeQuietly( glacier );
+        }
+    }
+
+    private boolean hasValidParameters( List<String> parameters ) {
+        try {
+            validate( parameters );
+            return true;
+        } catch ( IllegalArgumentException e ) {
+            LOG.error( e.getMessage(), e );
+            return false;
         }
     }
 
