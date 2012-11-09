@@ -100,24 +100,6 @@
         <plugins>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-clean-plugin</artifactId>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>${releaseDir}</directory>
-                            <includes>
-                                <include>${project.artifactId}-*.*</include>
-                            </includes>
-                            <excludes>
-                                <exclude>${project.artifactId}-${project.version}.*</exclude>
-                            </excludes>
-                        </fileset>
-                    </filesets>
-                </configuration>
-            </plugin>
-
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>appassembler-maven-plugin</artifactId>
                 <version>1.3</version>
@@ -192,34 +174,6 @@
                                 <descriptor>${basedir}/src/main/assembly/release.xml</descriptor>
                             </descriptors>
                             <appendAssemblyId>false</appendAssemblyId>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>move-to-release-dir</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${releaseDir}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.build.directory}</directory>
-                                    <includes>
-                                        <include>${project.artifactId}-${project.version}.*</include>
-                                    </includes>
-                                    <excludes>
-                                        <exclude>*.jar</exclude>
-                                    </excludes>
-                                </resource>
-                            </resources>
                         </configuration>
                     </execution>
                 </executions>
