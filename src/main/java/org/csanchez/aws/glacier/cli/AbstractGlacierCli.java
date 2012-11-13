@@ -47,9 +47,8 @@ public abstract class AbstractGlacierCli implements Runnable {
             this.parameters = newArrayList( notNull( cmd.getArgs() ) );
             this.glacier = glacier;
         } catch ( Exception e ) {
-            throw new RuntimeException( e );
-        } finally {
             IOUtils.closeQuietly( glacier );
+            throw new RuntimeException( e );
         }
     }
 
