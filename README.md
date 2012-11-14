@@ -59,3 +59,7 @@ glacier-vaults -region eu-west-1
 -region      <region>  Defaults to 'us-east-1'
 -credentials <file>    Defaults to '$HOME/AwsCredentials.properties'
 ```
+
+## Thanks to
+
+* [Carlos Sanchez](https://github.com/carlossg) for his [glacier-cli](https://github.com/carlossg) project from which this fork originally stemmed.
