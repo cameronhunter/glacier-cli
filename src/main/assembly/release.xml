@@ -9,6 +9,13 @@
   
   <fileSets>
     <fileSet>
+      <directory>${basedir}</directory>
+      <includes>
+        <include>README*</include>
+        <include>LICENSE*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
       <directory>${cliExecutables}</directory>
       <directoryMode>0755</directoryMode>
       <fileMode>0755</fileMode>
