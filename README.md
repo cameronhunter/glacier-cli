@@ -62,4 +62,4 @@ glacier-vaults -region eu-west-1
 
 ## Thanks to
 
-* [Carlos Sanchez](https://github.com/carlossg) for his [glacier-cli](https://github.com/carlossg) project from which this fork originally stemmed.
+[Carlos Sanchez](https://github.com/carlossg) for his [glacier-cli](https://github.com/carlossg) project from which this fork originally stemmed.
