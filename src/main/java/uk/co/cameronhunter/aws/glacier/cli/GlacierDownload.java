@@ -32,9 +32,9 @@ public class GlacierDownload extends AbstractGlacierCli {
 
     @Override
     protected void execute( Glacier glacier, List<String> parameters ) throws Exception {
-        String vault = parameters.get( 1 );
-        String archiveId = parameters.get( 2 );
-        String target = parameters.get( 3 );
+        String vault = parameters.get( 0 );
+        String archiveId = parameters.get( 1 );
+        String target = parameters.get( 2 );
 
         File archive = glacier.download( vault, archiveId ).get();
         archive.renameTo( new File( target ) );
