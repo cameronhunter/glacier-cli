@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.csanchez.aws</groupId>
+    <groupId>uk.co.cameronhunter.aws</groupId>
     <artifactId>glacier-cli</artifactId>
-    <version>3.1.0</version>
+    <version>3.2.0</version>
 
     <scm>
         <url>https://github.com/cameronhunter/glacier-cli</url>
@@ -12,7 +12,7 @@
     </scm>
 
     <properties>
-        <cli>org.csanchez.aws.glacier.cli</cli>
+        <cli>uk.co.cameronhunter.aws.glacier.cli</cli>
         <mainClass>${cli}.GlacierAll</mainClass>
         <cliExecutables>${project.build.directory}/${project.artifactId}</cliExecutables>
         <releaseDir>${basedir}/release</releaseDir>
