@@ -1,18 +1,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>uk.co.cameronhunter.aws</groupId>
+    <groupId>us.ca.bdl3.aws</groupId>
     <artifactId>glacier-cli</artifactId>
-    <version>3.2.1</version>
+    <version>3.2.2</version>
 
     <scm>
-        <url>https://github.com/cameronhunter/glacier-cli</url>
-        <connection>scm:git:git://github.com/cameronhunter/glacier-cli.git</connection>
-        <developerConnection>scm:git:git@github.com:cameronhunter/glacier-cli.git</developerConnection>
+        <url>https://github.com/bdl3/glacier-cli</url>
+        <connection>scm:git:git://github.com/bdl3/glacier-cli.git</connection>
+        <developerConnection>scm:git:git@github.com:bdl3/glacier-cli.git</developerConnection>
     </scm>
 
     <properties>
-        <cli>uk.co.cameronhunter.aws.glacier.cli</cli>
+        <cli>us.ca.bdl3.aws.glacier.cli</cli>
         <mainClass>${cli}.GlacierAll</mainClass>
         <cliExecutables>${project.build.directory}/${project.artifactId}</cliExecutables>
         <releaseDir>${basedir}/release</releaseDir>
