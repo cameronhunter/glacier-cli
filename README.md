@@ -4,7 +4,7 @@ A command line client to [Amazon Glacier](http://aws.amazon.com/glacier), an ext
 
 ## Getting Started
 
-Download a [release](https://github.com/cameronhunter/glacier-cli/downloads), extract the files and add the `bin` directory to your `PATH`. If you want to build the project yourself you can run `mvn clean package`. Requires Java 6 or later.
+Download a [release](https://github.com/brocklaporte/glacier-cli/downloads), extract the files and add the `bin` directory to your `PATH`. If you want to build the project yourself you can run `mvn clean package`. Requires Java 6 or later.
 
 ## Configuration
 
