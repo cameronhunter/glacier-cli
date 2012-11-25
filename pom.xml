@@ -6,9 +6,9 @@
     <version>3.2.2</version>
 
     <scm>
-        <url>https://github.com/bdl3/glacier-cli</url>
-        <connection>scm:git:git://github.com/bdl3/glacier-cli.git</connection>
-        <developerConnection>scm:git:git@github.com:bdl3/glacier-cli.git</developerConnection>
+        <url>https://github.com/brocklaporte/glacier-cli</url>
+        <connection>scm:git:git://github.com/brocklaporte/glacier-cli.git</connection>
+        <developerConnection>scm:git:git@github.com:brocklaporte/glacier-cli.git</developerConnection>
     </scm>
 
     <properties>
