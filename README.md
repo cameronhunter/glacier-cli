@@ -4,7 +4,7 @@ A command line client to [Amazon Glacier](http://aws.amazon.com/glacier), an ext
 
 ## Getting Started
 
-Download a [release](https://github.com/cameronhunter/glacier-cli/downloads), extract the files and add the `bin` directory to your `PATH`. If you want to build the project yourself you can run `mvn clean package`. Requires Java 6 or later.
+Download a [release](https://github.com/brocklaporte/glacier-cli/downloads), extract the files and add the `bin` directory to your `PATH`. If you want to build the project yourself you can run `mvn clean package`. Requires Java 6 or later.
 
 ## Configuration
 
@@ -62,4 +62,4 @@ glacier-vaults -region eu-west-1
 
 ## Thanks to
 
-[Carlos Sanchez](https://github.com/carlossg) for his [glacier-cli](https://github.com/carlossg) project from which this fork originally stemmed.
+[Cameron Hunter](https://github.com/cameronhunter) for his fork and adaptation of [Carlos Sanchez's](https://github.com/carlossg) [glacier-cli](https://github.com/carlossg) project.

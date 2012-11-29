@@ -29,6 +29,8 @@ import uk.co.cameronhunter.aws.glacier.domain.Vault;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.glacier.AmazonGlacierClient;
+import com.amazonaws.services.sns.AmazonSNSClient;
+import com.amazonaws.services.sqs.AmazonSQSClient;
 import com.amazonaws.services.glacier.transfer.ArchiveTransferManager;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
@@ -47,6 +49,8 @@ public class Glacier implements Closeable {
 
     private final ExecutorService workers;
     private final AmazonGlacierClient client;
+    private final AmazonSNSClient sns;
+    private final AmazonSQSClient sqs;
     private final ArchiveTransferManager transferManager;
     private final Set<String> vaults;
 
@@ -64,7 +68,14 @@ public class Glacier implements Closeable {
 
         this.client = new AmazonGlacierClient( credentials );
         this.client.setEndpoint( "https://glacier." + region + ".amazonaws.com/" );
-        this.transferManager = new ArchiveTransferManager( client, credentials );
+
+        this.sns = new AmazonSNSClient( credentials );
+        this.sns.setEndpoint( "https://sns." + region + ".amazonaws.com/" );
+            
+        this.sqs = new AmazonSQSClient( credentials );
+        this.sqs.setEndpoint( "https://sqs." + region + ".amazonaws.com/" );
+        
+        this.transferManager = new ArchiveTransferManager( this.client, this.sqs, this.sns );
 
         LOG.info( "Retrieving vault names in \"" + region + "\" region" );
 
