@@ -13,6 +13,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import com.amazonaws.regions.Region;
+import com.amazonaws.services.sns.AmazonSNSClient;
+import com.amazonaws.services.sqs.AmazonSQSClient;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,63 +44,72 @@ import com.google.common.collect.ImmutableSet;
  */
 public class Glacier implements Closeable {
 
-    private static final Log LOG = LogFactory.getLog( Glacier.class );
+    private static final Log LOG = LogFactory.getLog(Glacier.class);
 
     public final String region;
 
     private final ExecutorService workers;
-    private final AmazonGlacierClient client;
+    private final AmazonGlacierClient glacier;
     private final ArchiveTransferManager transferManager;
     private final Set<String> vaults;
+    private final AmazonSQSClient sqs;
+    private final AmazonSNSClient sns;
 
-    public Glacier( AWSCredentials credentials, String region ) {
-        this( Executors.newSingleThreadExecutor(), credentials, region );
+    public Glacier(AWSCredentials credentials, String region) {
+        this(Executors.newSingleThreadExecutor(), credentials, region);
     }
 
-    public Glacier( ExecutorService workers, AWSCredentials credentials, String region ) {
-        notNull( credentials );
+    public Glacier(ExecutorService workers, AWSCredentials credentials, String region) {
+        notNull(credentials);
 
-        this.workers = notNull( workers );
-        this.region = notBlank( region );
+        this.workers = notNull(workers);
+        this.region = notBlank(region);
 
-        LOG.info( "Using \"" + region + "\" region" );
+        LOG.info("Using \"" + region + "\" region");
 
-        this.client = new AmazonGlacierClient( credentials );
-        this.client.setEndpoint( "https://glacier." + region + ".amazonaws.com/" );
-        this.transferManager = new ArchiveTransferManager( client, credentials );
+        this.glacier = new AmazonGlacierClient(credentials);
+        this.glacier.setEndpoint("https://glacier." + region + ".amazonaws.com/");
 
-        LOG.info( "Retrieving vault names in \"" + region + "\" region" );
+        this.sqs = new AmazonSQSClient(credentials);
+        this.sqs.setEndpoint("https://sqs." + region + ".amazonaws.com/");
 
-        this.vaults = ImmutableSet.copyOf( transform( new Vaults( client ).call(), VAULT_NAME ) );
+        this.sns = new AmazonSNSClient(credentials);
+        this.sns.setEndpoint("https://sns." + region + ".amazonaws.com/");
+
+        this.transferManager = new ArchiveTransferManager(glacier, sqs, sns);
+
+        LOG.info("Retrieving vault names in \"" + region + "\" region");
+
+        this.vaults = ImmutableSet.copyOf(transform(new Vaults(glacier).call(), VAULT_NAME));
     }
 
     public Future<Collection<Vault>> vaults() {
-        return workers.submit( new Vaults( client ) );
+        return workers.submit(new Vaults(glacier));
     }
 
-    public Future<Collection<Archive>> inventory( String vault ) {
-        checkVaultExists( vault );
-        return workers.submit( new Inventory( client, vault ) );
+    public Future<Collection<Archive>> inventory(String vault) {
+        checkVaultExists(vault);
+        return workers.submit(new Inventory(glacier, vault));
     }
 
-    public Future<Archive> upload( String vault, String archiveName ) {
-        return upload( vault, archiveName, null );
+    public Future<Archive> upload(String vault, String archiveName) {
+        return upload(vault, archiveName, null);
     }
 
-    public Future<Archive> upload( String vault, String archiveName, Callback<Archive> callback ) {
-        checkVaultExists( vault );
-        File archive = new File( archiveName );
-        return workers.submit( After.create( new Upload( transferManager, vault, archive ), callback ) );
+    public Future<Archive> upload(String vault, String archiveName, Callback<Archive> callback) {
+        checkVaultExists(vault);
+        File archive = new File(archiveName);
+        return workers.submit(After.create(new Upload(transferManager, vault, archive), callback));
     }
 
-    public Future<File> download( String vault, String archiveId ) {
-        checkVaultExists( vault );
-        return workers.submit( new Download( transferManager, vault, archiveId ) );
+    public Future<File> download(String vault, String archiveId) {
+        checkVaultExists(vault);
+        return workers.submit(new Download(transferManager, vault, archiveId));
     }
 
-    public Future<Boolean> delete( String vault, String archiveId ) {
-        checkVaultExists( vault );
-        return workers.submit( new Delete( client, vault, archiveId ) );
+    public Future<Boolean> delete(String vault, String archiveId) {
+        checkVaultExists(vault);
+        return workers.submit(new Delete(glacier, vault, archiveId));
     }
 
     @Override
@@ -105,13 +117,13 @@ public class Glacier implements Closeable {
         workers.shutdown();
     }
 
-    private void checkVaultExists( String vault ) {
-        Validate.isTrue( vaults.contains( vault ), "Vault \"" + vault + "\" doesn't exist in \"" + region + "\" region. Available vaults: " + vaults );
+    private void checkVaultExists(String vault) {
+        Validate.isTrue(vaults.contains(vault), "Vault \"" + vault + "\" doesn't exist in \"" + region + "\" region. Available vaults: " + vaults);
     }
 
     private static final Function<Vault, String> VAULT_NAME = new Function<Vault, String>() {
         @Override
-        public String apply( Vault vault ) {
+        public String apply(Vault vault) {
             return vault.name;
         }
     };

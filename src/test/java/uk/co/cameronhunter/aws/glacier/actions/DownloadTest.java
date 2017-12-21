@@ -1,16 +1,14 @@
 package uk.co.cameronhunter.aws.glacier.actions;
 
-import java.io.File;
-
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.event.ProgressListener;
+import com.amazonaws.services.glacier.transfer.ArchiveTransferManager;
 import org.jmock.Expectations;
 import org.junit.Before;
 import org.junit.Test;
-
-import uk.co.cameronhunter.aws.glacier.actions.Download;
 import uk.co.cameronhunter.aws.glacier.test.utils.MockTestHelper;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.glacier.transfer.ArchiveTransferManager;
+import java.io.File;
 
 public class DownloadTest extends MockTestHelper {
 
@@ -22,30 +20,30 @@ public class DownloadTest extends MockTestHelper {
 
     @Before
     public void setUp() {
-        atm = mock( ArchiveTransferManager.class );
-        file = mock( File.class );
+        atm = mock(ArchiveTransferManager.class);
+        file = mock(File.class);
     }
 
-    @Test( expected = RuntimeException.class )
+    @Test(expected = RuntimeException.class)
     public void download_shouldCleanUpAfterAnException() throws Exception {
-        expectThat( anExceptionIsThrown() );
-        expectThat( theFileIsDeleted() );
+        expectThat(anExceptionIsThrown());
+        expectThat(theFileIsDeleted());
 
-        new Download( atm, VAULT, ARCHIVE_ID ).downloadTo( file );
+        new Download(atm, VAULT, ARCHIVE_ID, ProgressListener.NOOP).downloadTo(file);
     }
 
     @Test
     public void download_shouldNotDeleteTheFileIfSuccessful() throws Exception {
-        expectThat( fileDownloadServiceCall() );
-        expectThat( fileIsNotDeleted() );
+        expectThat(fileDownloadServiceCall());
+        expectThat(fileIsNotDeleted());
 
-        new Download( atm, VAULT, ARCHIVE_ID ).downloadTo( file );
+        new Download(atm, VAULT, ARCHIVE_ID, ProgressListener.NOOP).downloadTo(file);
     }
 
     private Expectations fileDownloadServiceCall() {
         return new Expectations() {
             {
-                one( atm ).download( VAULT, ARCHIVE_ID, file );
+                one(atm).download(null, VAULT, ARCHIVE_ID, file, ProgressListener.NOOP);
             }
         };
     }
@@ -53,7 +51,7 @@ public class DownloadTest extends MockTestHelper {
     private Expectations fileIsNotDeleted() {
         return new Expectations() {
             {
-                never( file ).delete();
+                never(file).delete();
             }
         };
     }
@@ -61,8 +59,8 @@ public class DownloadTest extends MockTestHelper {
     private Expectations anExceptionIsThrown() {
         return new Expectations() {
             {
-                one( atm ).download( VAULT, ARCHIVE_ID, file );
-                will( throwException( new AmazonServiceException( "Some AWS exception" ) ) );
+                one(atm).download(null, VAULT, ARCHIVE_ID, file, ProgressListener.NOOP);
+                will(throwException(new AmazonServiceException("Some AWS exception")));
             }
         };
     }
@@ -70,7 +68,7 @@ public class DownloadTest extends MockTestHelper {
     private Expectations theFileIsDeleted() {
         return new Expectations() {
             {
-                one( file ).delete();
+                one(file).delete();
             }
         };
     }
