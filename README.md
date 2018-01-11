@@ -4,15 +4,23 @@ A command line client to [Amazon Glacier](http://aws.amazon.com/glacier), an ext
 
 ## Getting Started
 
-Download a [release](https://github.com/cameronhunter/glacier-cli/downloads), extract the files and add the `bin` directory to your `PATH`. If you want to build the project yourself you can run `mvn clean package`. Requires Java 6 or later.
+Download a [release](https://github.com/cameronhunter/glacier-cli/downloads), extract the files and add the `bin` directory to your `PATH`. If you want to build the project yourself you can run `mvn clean package`. Requires Java 8 or later.
 
 ## Configuration
 
-Provide your AWS credentials by setting `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` environment variables or by passing a properties file with the `-credentials` option.
+Provide your AWS credentials by setting `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `AWS_REGION` environment variables or using properties files:
 
+`~/.aws/credentials`:
 ```
-secretKey=…
-accessKey=…
+[default]
+aws_access_key_id={YOUR_ACCESS_KEY_ID}
+aws_secret_access_key={YOUR_SECRET_ACCESS_KEY}
+```
+
+`~/.aws/config`:
+```
+[default]
+region={YOUR_AWS_REGION}
 ```
 
 ## Usage
@@ -41,25 +49,14 @@ Get the inventory for vault `pictures` (takes >4 hours)
 glacier-inventory pictures
 ```
 
-Upload `file1.zip` and `file2.zip` to vault `pictures` in European region
+Upload `file1.zip` and `file2.zip` to vault `pictures`
 
 ```bash
-glacier-upload -region eu-west-1 pictures file1 file2
+glacier-upload pictures file1 file2
 ```
 
-List vaults in European region
+List vaults
 
 ```bash
-glacier-vaults -region eu-west-1
+glacier-vaults
 ```
-
-## Command line options
-
-```
--region      <region>  Defaults to 'us-east-1'
--credentials <file>    Defaults to '$HOME/AwsCredentials.properties'
-```
-
-## Thanks to
-
-[Carlos Sanchez](https://github.com/carlossg) for his [glacier-cli](https://github.com/carlossg) project from which this fork originally stemmed.

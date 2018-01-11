@@ -4,9 +4,9 @@ public enum Action {
 
     UPLOAD, DOWNLOAD, DELETE, INVENTORY, VAULTS;
 
-    public static Action fromName( String name ) {
-        for ( Action action : values() ) {
-            if ( action.name().equalsIgnoreCase( name ) ) return action;
+    public static Action fromName(String name) {
+        for (Action action : values()) {
+            if (action.name().equalsIgnoreCase(name)) return action;
         }
 
         return null;

@@ -1,8 +1,26 @@
 package uk.co.cameronhunter.aws.glacier;
 
-import static com.google.common.collect.Iterables.transform;
-import static uk.co.cameronhunter.aws.glacier.utils.Check.notBlank;
-import static uk.co.cameronhunter.aws.glacier.utils.Check.notNull;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.glacier.AmazonGlacier;
+import com.amazonaws.services.glacier.AmazonGlacierClientBuilder;
+import com.amazonaws.services.glacier.model.*;
+import com.amazonaws.services.glacier.transfer.ArchiveTransferManager;
+import com.amazonaws.services.glacier.transfer.ArchiveTransferManagerBuilder;
+import com.amazonaws.services.s3.model.Tier;
+import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.AmazonSNSClientBuilder;
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.google.common.collect.ImmutableSet;
+import org.apache.commons.lang.Validate;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import uk.co.cameronhunter.aws.glacier.actions.*;
+import uk.co.cameronhunter.aws.glacier.domain.After;
+import uk.co.cameronhunter.aws.glacier.domain.Archive;
+import uk.co.cameronhunter.aws.glacier.domain.Callback;
+import uk.co.cameronhunter.aws.glacier.domain.Vault;
 
 import java.io.Closeable;
 import java.io.File;
@@ -12,75 +30,38 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Function;
 
-import com.amazonaws.regions.Region;
-import com.amazonaws.services.sns.AmazonSNSClient;
-import com.amazonaws.services.sqs.AmazonSQSClient;
-import org.apache.commons.lang.Validate;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import uk.co.cameronhunter.aws.glacier.actions.Delete;
-import uk.co.cameronhunter.aws.glacier.actions.Download;
-import uk.co.cameronhunter.aws.glacier.actions.Inventory;
-import uk.co.cameronhunter.aws.glacier.actions.Upload;
-import uk.co.cameronhunter.aws.glacier.actions.Vaults;
-import uk.co.cameronhunter.aws.glacier.domain.After;
-import uk.co.cameronhunter.aws.glacier.domain.Archive;
-import uk.co.cameronhunter.aws.glacier.domain.Callback;
-import uk.co.cameronhunter.aws.glacier.domain.Vault;
-
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.services.glacier.AmazonGlacierClient;
-import com.amazonaws.services.glacier.transfer.ArchiveTransferManager;
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableSet;
+import static java.util.stream.Collectors.toList;
+import static uk.co.cameronhunter.aws.glacier.utils.Check.notNull;
 
 /**
  * Uses Glacier high level API for uploading, downloading, deleting files, and
  * the low-level one for retrieving vault inventory.
- *
- * @see http://docs.amazonwebservices.com/amazonglacier/latest/dev/
  */
 public class Glacier implements Closeable {
 
     private static final Log LOG = LogFactory.getLog(Glacier.class);
-
-    public final String region;
+    private static final Function<Vault, String> VAULT_NAME = vault -> vault.name;
 
     private final ExecutorService workers;
-    private final AmazonGlacierClient glacier;
+    private final AmazonGlacier glacier;
     private final ArchiveTransferManager transferManager;
+    private final AmazonSQS sqs;
+    private final AmazonSNS sns;
     private final Set<String> vaults;
-    private final AmazonSQSClient sqs;
-    private final AmazonSNSClient sns;
 
-    public Glacier(AWSCredentials credentials, String region) {
-        this(Executors.newSingleThreadExecutor(), credentials, region);
+    public Glacier(AWSCredentialsProvider credentialsProvider, Regions region) {
+        this(Executors.newSingleThreadExecutor(), credentialsProvider, region);
     }
 
-    public Glacier(ExecutorService workers, AWSCredentials credentials, String region) {
-        notNull(credentials);
-
+    public Glacier(ExecutorService workers, AWSCredentialsProvider credentialsProvider, Regions region) {
         this.workers = notNull(workers);
-        this.region = notBlank(region);
-
-        LOG.info("Using \"" + region + "\" region");
-
-        this.glacier = new AmazonGlacierClient(credentials);
-        this.glacier.setEndpoint("https://glacier." + region + ".amazonaws.com/");
-
-        this.sqs = new AmazonSQSClient(credentials);
-        this.sqs.setEndpoint("https://sqs." + region + ".amazonaws.com/");
-
-        this.sns = new AmazonSNSClient(credentials);
-        this.sns.setEndpoint("https://sns." + region + ".amazonaws.com/");
-
-        this.transferManager = new ArchiveTransferManager(glacier, sqs, sns);
-
-        LOG.info("Retrieving vault names in \"" + region + "\" region");
-
-        this.vaults = ImmutableSet.copyOf(transform(new Vaults(glacier).call(), VAULT_NAME));
+        this.glacier = AmazonGlacierClientBuilder.standard().withCredentials(credentialsProvider).withRegion(region).build();
+        this.sqs = AmazonSQSClientBuilder.standard().withCredentials(credentialsProvider).withRegion(region).build();
+        this.sns = AmazonSNSClientBuilder.standard().withCredentials(credentialsProvider).withRegion(region).build();
+        this.transferManager = new ArchiveTransferManagerBuilder().withGlacierClient(glacier).withSqsClient(sqs).withSnsClient(sns).build();
+        this.vaults = ImmutableSet.copyOf(new Vaults(glacier).call().stream().map(VAULT_NAME).collect(toList()));
     }
 
     public Future<Collection<Vault>> vaults() {
@@ -103,8 +84,18 @@ public class Glacier implements Closeable {
     }
 
     public Future<File> download(String vault, String archiveId) {
+        return download(vault, archiveId, Tier.Standard);
+    }
+
+    public Future<File> download(String vault, String archiveId, Tier tier) {
         checkVaultExists(vault);
-        return workers.submit(new Download(transferManager, vault, archiveId));
+//        checkDataRetrievalPolicy();
+
+        if (tier == null || tier == Tier.Standard) {
+            return workers.submit(new Download(transferManager, vault, archiveId));
+        } else {
+            return workers.submit(new DownloadWithTier(transferManager, glacier, sqs, sns, vault, archiveId, tier));
+        }
     }
 
     public Future<Boolean> delete(String vault, String archiveId) {
@@ -115,17 +106,24 @@ public class Glacier implements Closeable {
     @Override
     public void close() throws IOException {
         workers.shutdown();
+        glacier.shutdown();
+        sqs.shutdown();
+        sns.shutdown();
     }
 
     private void checkVaultExists(String vault) {
-        Validate.isTrue(vaults.contains(vault), "Vault \"" + vault + "\" doesn't exist in \"" + region + "\" region. Available vaults: " + vaults);
+        Validate.isTrue(vaults.contains(vault), "Vault \"" + vault + "\" doesn't exist. Available vaults: " + vaults);
     }
 
-    private static final Function<Vault, String> VAULT_NAME = new Function<Vault, String>() {
-        @Override
-        public String apply(Vault vault) {
-            return vault.name;
-        }
-    };
+    private void checkDataRetrievalPolicy() {
+        GetDataRetrievalPolicyResult result = glacier.getDataRetrievalPolicy(new GetDataRetrievalPolicyRequest().withAccountId("-"));
 
+        DataRetrievalPolicy policy = result.getPolicy();
+
+        LOG.info("Using data retrieval policy: " + policy);
+
+        boolean noDataRetrievalPolicy = policy.getRules().stream().map(DataRetrievalRule::getStrategy).anyMatch("None"::equals);
+
+        Validate.isTrue(!noDataRetrievalPolicy, "No data retrieval policy has been set. See: https://docs.aws.amazon.com/amazonglacier/latest/dev/data-retrieval-policy.html");
+    }
 }

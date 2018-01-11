@@ -19,7 +19,7 @@ public class Download implements Callable<File> {
     private static final ProgressListener DEFAULT_PROGRESS_LISTENER = new ProgressListener() {
         @Override
         public void progressChanged(ProgressEvent progressEvent) {
-            LOG.info("Progress: " + progressEvent);
+            LOG.debug("Progress: " + progressEvent);
         }
     };
 

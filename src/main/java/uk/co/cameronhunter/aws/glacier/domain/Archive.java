@@ -1,10 +1,10 @@
 package uk.co.cameronhunter.aws.glacier.domain;
 
+import org.joda.time.DateTime;
+
 import static org.apache.commons.io.FileUtils.byteCountToDisplaySize;
 import static org.joda.time.format.ISODateTimeFormat.dateTimeNoMillis;
 import static uk.co.cameronhunter.aws.glacier.utils.CharDelimitedString.tsv;
-
-import org.joda.time.DateTime;
 
 public final class Archive {
 
@@ -13,7 +13,7 @@ public final class Archive {
     public final DateTime creationDate;
     public final Long sizeInBytes;
 
-    public Archive( String archiveId, String description, DateTime creationDate, Long sizeInBytes ) {
+    public Archive(String archiveId, String description, DateTime creationDate, Long sizeInBytes) {
         this.archiveId = archiveId;
         this.name = description;
         this.creationDate = creationDate;
@@ -22,9 +22,9 @@ public final class Archive {
 
     @Override
     public String toString() {
-        return tsv( name, dateTimeNoMillis().print( creationDate ), byteCountToDisplaySize( sizeInBytes ), sizeInBytes, archiveId );
+        return tsv(name, dateTimeNoMillis().print(creationDate), byteCountToDisplaySize(sizeInBytes), sizeInBytes, archiveId);
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -34,14 +34,14 @@ public final class Archive {
     }
 
     @Override
-    public boolean equals( Object obj ) {
-        if ( this == obj ) return true;
-        if ( obj == null ) return false;
-        if ( getClass() != obj.getClass() ) return false;
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         Archive other = (Archive) obj;
-        if ( archiveId == null ) {
-            if ( other.archiveId != null ) return false;
-        } else if ( !archiveId.equals( other.archiveId ) ) return false;
+        if (archiveId == null) {
+            if (other.archiveId != null) return false;
+        } else if (!archiveId.equals(other.archiveId)) return false;
         return true;
     }
 

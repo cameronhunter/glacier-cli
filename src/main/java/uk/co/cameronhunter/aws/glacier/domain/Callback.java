@@ -1,7 +1,6 @@
 package uk.co.cameronhunter.aws.glacier.domain;
 
+@FunctionalInterface
 public interface Callback<T> {
-
-    public void run( T item );
-    
+    void run(T item);
 }

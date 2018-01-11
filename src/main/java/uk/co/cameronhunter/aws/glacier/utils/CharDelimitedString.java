@@ -1,23 +1,19 @@
 package uk.co.cameronhunter.aws.glacier.utils;
 
-import static com.google.common.collect.Iterables.transform;
-import static java.util.Arrays.asList;
-import static org.apache.commons.lang.StringUtils.EMPTY;
-
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+
+import java.util.function.Function;
+
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang.StringUtils.EMPTY;
 
 public final class CharDelimitedString {
 
-    private static final Function<Object, Object> NULL_TO_EMPTY_STRING = new Function<Object, Object>() {
-        @Override
-        public Object apply( Object input ) {
-            return input == null ? EMPTY : input;
-        }
-    };
+    private static final Function<Object, Object> NULL_TO_EMPTY_STRING = input -> input == null ? EMPTY : input;
 
-    public static String tsv( Object... fields ) {
-        return Joiner.on( '\t' ).join( transform( asList( fields ), NULL_TO_EMPTY_STRING ) );
+    public static String tsv(Object... fields) {
+        return Joiner.on('\t').join(asList(fields).stream().map(NULL_TO_EMPTY_STRING).collect(toList()));
     }
 
     private CharDelimitedString() {}
