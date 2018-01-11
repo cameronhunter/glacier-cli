@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.co.cameronhunter.aws</groupId>
     <artifactId>glacier-cli</artifactId>
-    <version>3.2.2</version>
+    <version>4.0.0</version>
 
     <scm>
         <url>https://github.com/cameronhunter/glacier-cli</url>
