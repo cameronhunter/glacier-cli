@@ -4,7 +4,9 @@ A command line client to [Amazon Glacier](http://aws.amazon.com/glacier), an ext
 
 ## Usage
 
-```
+```bash
+$ glacier --help
+
 Usage: glacier [command]
 
 Commands:
@@ -28,37 +30,37 @@ Options:
 Upload `file1.zip` and `file2.zip` to vault `pictures`
 
 ```bash
-glacier-upload pictures file1.zip file2.zip
+$ glacier-upload pictures file1.zip file2.zip
 ```
 
 Download archive with id `xxx` from vault `pictures` to file `pic.tar` (takes >4 hours)
 
 ```bash
-glacier-download pictures xxx pic.tar
+$ glacier-download pictures xxx pic.tar
 ```
 
 Delete archive with id `xxx` from vault `pictures`
 
 ```bash
-glacier-delete pictures xxx
+$ glacier-delete pictures xxx
 ```
 
 Get the inventory for vault `pictures` (takes >4 hours)
 
 ```bash
-glacier-inventory pictures
+$ glacier-inventory pictures
 ```
 
 Upload `file1.zip` and `file2.zip` to vault `pictures`
 
 ```bash
-glacier-upload pictures file1 file2
+$ glacier-upload pictures file1 file2
 ```
 
 List vaults
 
 ```bash
-glacier-vaults
+$ glacier-vaults
 ```
 
 ## Advanced Configuration
