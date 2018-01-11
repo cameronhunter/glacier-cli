@@ -193,28 +193,6 @@
                 </configuration>
             </plugin>
 
-            <plugin>
-                <groupId>com.github.github</groupId>
-                <artifactId>downloads-maven-plugin</artifactId>
-                <version>0.6</version>
-                <executions>
-                    <execution>
-                        <id>upload-to-github</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>upload</goal>
-                        </goals>
-                        <configuration>
-                            <description>${project.version} release</description>
-                            <override>true</override>
-                            <includeAttached>true</includeAttached>
-                            <includes>
-                                <include>${project.artifactId}-${project.version}*.*</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
