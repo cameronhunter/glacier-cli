@@ -2,10 +2,6 @@
 
 A command line client to [Amazon Glacier](http://aws.amazon.com/glacier), an extremely low-cost storage service that provides secure and durable storage for data archiving and backup.
 
-## Getting Started
-
-Download a [release](https://github.com/cameronhunter/glacier-cli/downloads), extract the files and add the `bin` directory to your `PATH`. If you want to build the project yourself you can run `mvn clean package`. Requires Java 8 or later.
-
 ## Usage
 
 ```
